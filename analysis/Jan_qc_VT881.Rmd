@@ -65,6 +65,7 @@ The method to do this consists of three parts:
 Various approaches of estimating and removing soup contamination: <https://cran.r-project.org/web/packages/SoupX/readme/README.html> <https://rawcdn.githack.com/constantAmateur/SoupX/204b602418df12e9fdb4b68775a8b486c6504fe4/inst/doc/pbmcTutorial.html>
 
 We use the **automatic method** to estimate the contamination fraction and decontaminate data.
+
 Leverages clustering information from cellranger.
 
 ```{r, eval=FALSE}
@@ -95,6 +96,7 @@ dim(data)
 
 ```
 Dim result shows 2 numbers: features/genes & cells
+
 We have same dims but soupX filtered is corrected, so counts may be different
 
 Next, check that all cells and genes are in both datasets and in the same order
@@ -151,7 +153,7 @@ class(vt881_jan)
 saveRDS(vt881_jan, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/vt881_soupX_filtered/vt881_jan_SeuratObj.rds")
 ```
 
-###Perform pre-processing and dimensional reduction.
+### Perform pre-processing and dimensional reduction.
 
 **Single-cell gene expression:** scRNA-seq data is analysed using standard pipelines in Seurat which include normalization, feature selection, and dimensional reduction with PCA.
 
@@ -374,7 +376,7 @@ include_graphics('/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTinte
                  error = getOption("knitr.graphics.error", TRUE), dpi = 300)
 ```
 
-###Load in scrublet predictions
+### Load in scrublet predictions
 
 ```{r, collapse=TRUE}
 dim(scrublet_calls <- read.csv("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/vt881_soupX_filtered/scrublet_calls.csv")) 
