@@ -37,6 +37,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -353,7 +355,13 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/meg3uab/VTsc">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -525,13 +533,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong7da0329">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommeg3uabVTsctree71e1b46d8ee8c10fcb9330792d03b0c81951d4f7targetblank71e1b46a">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> 7da0329
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/meg3uab/VTsc/tree/71e1b46d8ee8c10fcb9330792d03b0c81951d4f7" target="_blank">71e1b46</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrong7da0329"
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommeg3uabVTsctree71e1b46d8ee8c10fcb9330792d03b0c81951d4f7targetblank71e1b46a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +550,8 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version 7da0329.
+The results in this page were generated with repository version
+<a href="https://github.com/meg3uab/VTsc/tree/71e1b46d8ee8c10fcb9330792d03b0c81951d4f7" target="_blank">71e1b46</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -610,7 +621,41 @@ Message
 Rmd
 </td>
 <td>
-7da0329
+<a href="https://github.com/meg3uab/VTsc/blob/71e1b46d8ee8c10fcb9330792d03b0c81951d4f7/analysis/Jan_qc_VT224.Rmd" target="_blank">71e1b46</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+<td>
+grammar edits of VTsc
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/meg3uab/VTsc/f0295108cbfe6770763f2b213fa3b50881108737/docs/Jan_qc_VT224.html" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/7da03296c60b754c9d4bed0fa3ead8fc712149de/analysis/Jan_qc_VT224.Rmd" target="_blank">7da0329</a>
 </td>
 <td>
 meg3uab
@@ -693,8 +738,8 @@ class="uri">https://cran.r-project.org/web/packages/SoupX/readme/README.html</a>
 href="https://rawcdn.githack.com/constantAmateur/SoupX/204b602418df12e9fdb4b68775a8b486c6504fe4/inst/doc/pbmcTutorial.html"
 class="uri">https://rawcdn.githack.com/constantAmateur/SoupX/204b602418df12e9fdb4b68775a8b486c6504fe4/inst/doc/pbmcTutorial.html</a></p>
 <p>We use the <strong>automatic method</strong> to estimate the
-contamination fraction and decontaminate data. Leverages clustering
-information from cellranger.</p>
+contamination fraction and decontaminate data.</p>
+<p>Leverages clustering information from cellranger.</p>
 <pre class="r"><code>sc1 = load10X(&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt224_outs&quot;)
 sc1 = autoEstCont(sc1)
 out1 = adjustCounts(sc1)
@@ -738,8 +783,9 @@ Formal class &#39;dgCMatrix&#39; [package &quot;Matrix&quot;] with 6 slots
 
 dim(data)
 [1] 36601  8097</code></pre>
-<p>Dim result shows 2 numbers: features/genes &amp; cells We have same
-dims but soupX filtered is corrected, so counts may be different</p>
+<p>Dim result shows 2 numbers: features/genes &amp; cells</p>
+<p>We have same dims but soupX filtered is corrected, so counts may be
+different</p>
 <p>Next, check that all cells and genes are in both datasets and in the
 same order</p>
 <pre class="r"><code>soupX_fg &lt;- as.data.frame(rownames(soupX_Filtered)) 
@@ -804,7 +850,10 @@ attr(,&quot;package&quot;)
 [1] &quot;SeuratObject&quot;
 
 saveRDS(vt224_jan, &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt224_outs/vt224_soupX_filtered/vt224_jan_SeuratObj.rds&quot;)</code></pre>
-<p>###Perform pre-processing and dimensional reduction.</p>
+</div>
+<div id="perform-pre-processing-and-dimensional-reduction."
+class="section level3">
+<h3>Perform pre-processing and dimensional reduction.</h3>
 <p><strong>Single-cell gene expression:</strong> scRNA-seq data is
 analysed using standard pipelines in Seurat which include normalization,
 feature selection, and dimensional reduction with PCA.</p>
@@ -845,6 +894,43 @@ p3 &lt;- VlnPlot(VT, features = c(&quot;percent.mt&quot;), ncol = 1) + theme_lig
 
 grid.arrange(p1, p2, p3, ncol=3)</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-7-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Feature Scatter Plots: nFeature_RNA is the number of genes detected
 in each cell. nCount_RNA is the total number of molecules detected
 within a cell. The number above each plot denotes the correlations
@@ -853,12 +939,86 @@ between x-axis and y-axis.</p>
 plot2 &lt;- FeatureScatter(VT, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;nFeature_RNA&quot;)
 plot1 + plot2</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-8-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-8-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Violin Plot of the data and distributions</p>
 <pre><code>      orig.ident nCount_RNA nFeature_RNA percent.mt
 1: SeuratProject   3691.207         1344   1.762533
 2: SeuratProject   3432.213         1289   2.835001
 3: SeuratProject   4891.823         1641   2.630836</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-9-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="editing-metadata" class="section level4">
 <h4>Editing Metadata</h4>
@@ -889,6 +1049,43 @@ metadata %&gt;%
 Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
 ℹ Please use `after_stat(count)` instead.</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-10-1.png" width="192" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-10-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="number-umismolecules-per-cell" class="section level4">
 <h4>Number UMIs/molecules per cell</h4>
@@ -901,6 +1098,43 @@ metadata  %&gt;%
     ylab(&quot;Cell density/UMI counts per cell&quot;) +
     geom_vline(xintercept = 500) + theme(legend.position = &quot;none&quot;)</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-11-1.png" width="384" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-11-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#The UMI counts per cell should generally be above 500, that is the low end of what we expect. If UMI counts are between 500-1000 counts, it is usable but the cells probably should have been sequenced more deeply</code></pre>
 </div>
 <div id="more-qc" class="section level4">
@@ -925,6 +1159,43 @@ df &lt;- cbind(counts_per_cell, genes_per_cell)
 
 ggplot(df, aes(x=counts, y=genes_per_cell)) + geom_point(color=&quot;gray30&quot;) + scale_y_continuous(trans=&#39;log10&#39;) + scale_x_continuous(trans=&#39;log10&#39;) + theme_light()</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-12-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-12-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Plot cells ranked by their number of detected genes.
 genes_per_cell$cells &lt;- rownames(genes_per_cell)
 
@@ -938,6 +1209,43 @@ ggplot(genes_per_cell, aes(x=reorder(genes_per_cell, cells), y=genes_per_cell)) 
              color=&quot;blue&quot;, linetype=&quot;dashed&quot;, size=0.5) + 
   geom_hline(aes(yintercept=max_genes_per_cell), color=&quot;blue&quot;, linetype=&quot;dashed&quot;, size=0.5) + labs(x= &quot;Cells&quot;, y=&quot;Number of Genes&quot;) + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), plot.title = element_text(size = 14, face = &quot;bold&quot;, hjust = 0.5)) </code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-12-2.png" width="576" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-2">
+Past versions of unnamed-chunk-12-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-12-2.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="percent-mt-distribution" class="section level4">
 <h4>Percent MT Distribution</h4>
@@ -947,6 +1255,43 @@ ggplot(VT@meta.data, aes(x=VT@meta.data$percent.mt)) +
 geom_vline(aes(xintercept=mean(VT@meta.data$percent.mt)),
             color=&quot;blue&quot;, linetype=&quot;dashed&quot;, size=0.5) +scale_x_continuous(breaks=seq(0, 100, by = 5))</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-13-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-13-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div
 id="data-filtering-calculate-value-in-the-93rd-percentile-for-a-hint-on-thresholds"
 class="section level5">
@@ -1003,7 +1348,8 @@ doublets. This histogram is an important diagnostic plot. Doublet score
 threshold should separate the two shoulders of the bimodal distribution
 as shown below:</p>
 <p><img src="../../../../Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/scrublet_imgs/vt224_cell_14_output_2.png" width="70%" style="display: block; margin: auto;" /></p>
-<p>###Load in scrublet predictions</p>
+<div id="load-in-scrublet-predictions" class="section level3">
+<h3>Load in scrublet predictions</h3>
 <pre class="r"><code>dim(scrublet_calls &lt;- read.csv(&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt224_outs/vt224_soupX_filtered/scrublet_calls.csv&quot;)) 
 [1] 8097    3
 
@@ -1035,6 +1381,7 @@ head(rownames(VT@meta.data))
 all(rownames(scrublet_calls) %in% rownames(VT@meta.data))
 [1] TRUE</code></pre>
 <pre class="r"><code>VT &lt;- AddMetaData(VT, scrublet_calls)</code></pre>
+</div>
 <div id="pre-normalized-visualization" class="section level3">
 <h3>Pre-Normalized Visualization</h3>
 <pre class="r"><code>#Without normalizing the data, we want to first visualize the doublets in our datasets
@@ -1049,20 +1396,20 @@ VT_Control_2 &lt;- RunUMAP(VT_Control_2, dims = 1:20, verbose = TRUE, reduction 
 Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
 To use Python UMAP via reticulate, set umap.method to &#39;umap-learn&#39; and metric to &#39;correlation&#39;
 This message will be shown once per session
-13:58:07 UMAP embedding parameters a = 0.9922 b = 1.112
-13:58:07 Read 7179 rows and found 20 numeric columns
-13:58:07 Using Annoy for neighbor search, n_neighbors = 30
-13:58:07 Building Annoy index with metric = cosine, n_trees = 50
+16:11:33 UMAP embedding parameters a = 0.9922 b = 1.112
+16:11:33 Read 7179 rows and found 20 numeric columns
+16:11:33 Using Annoy for neighbor search, n_neighbors = 30
+16:11:33 Building Annoy index with metric = cosine, n_trees = 50
 0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
-13:58:08 Writing NN index file to temp file /var/folders/0d/g9q0mtm13sbg08c7pryg5gk40000gn/T//RtmpfPg6Hk/file2e283c46aec
-13:58:08 Searching Annoy index using 1 thread, search_k = 3000
-13:58:10 Annoy recall = 100%
-13:58:10 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-13:58:12 Initializing from normalized Laplacian + noise (using irlba)
-13:58:12 Commencing optimization for 500 epochs, with 317210 positive edges
-13:58:24 Optimization finished
+16:11:33 Writing NN index file to temp file /var/folders/0d/g9q0mtm13sbg08c7pryg5gk40000gn/T//Rtmp3MPFlq/file3aa72e72050a
+16:11:33 Searching Annoy index using 1 thread, search_k = 3000
+16:11:35 Annoy recall = 100%
+16:11:36 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+16:11:37 Initializing from normalized Laplacian + noise (using irlba)
+16:11:38 Commencing optimization for 500 epochs, with 317210 positive edges
+16:11:50 Optimization finished
 VT_Control_2 &lt;- FindClusters(VT_Control_2, verbose = TRUE, reduction = &quot;pca&quot;) #Resolution can be adjusted - leaving to default for now in test dataset
 Warning: The following arguments are not used: reduction
 Warning: The following arguments are not used: reduction
@@ -1078,9 +1425,83 @@ Elapsed time: 0 seconds
 
 FeaturePlot(VT_Control_2, features = &quot;doublet_scores&quot;, pt.size = 0.01)</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-1.png" width="480" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 DimPlot(VT_Control_2, group.by = &quot;predicted_doublets&quot;, pt.size = 0.01, cols = c(&quot;gray90&quot;, &quot;firebrick3&quot;))</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-2.png" width="480" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-2">
+Past versions of unnamed-chunk-20-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-2.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 #Checking the nUMI for doublets and singlets
 VlnPlot(VT_Control_2,
@@ -1088,6 +1509,43 @@ VlnPlot(VT_Control_2,
         pt.size = 0,
         group.by = &quot;predicted_doublets&quot;) + NoLegend()</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-3.png" width="480" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-3">
+Past versions of unnamed-chunk-20-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-3.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 #Fractions of doublets per cluster
 df &lt;- data.table(VT_Control_2@meta.data)
@@ -1114,6 +1572,43 @@ perc %&gt;%
   scale_fill_manual(values = c(&quot;Doublet&quot; = &#39;red3&#39;, &quot;Singlet&quot; = &quot;gray80&quot;)) +
   theme(legend.position = &quot;right&quot;) +scale_y_continuous(expand = c(0,0))</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-4.png" width="480" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-4">
+Past versions of unnamed-chunk-20-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-4.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 #Next we&#39;ll remove the doublets and see what the data looks like
 VT_Control_2 &lt;- VT_Control_2[, VT_Control_2@meta.data[, &quot;predicted_doublets&quot;] == &quot;False&quot;]
@@ -1121,8 +1616,82 @@ unique(VT_Control_2@meta.data$predicted_doublets)
 [1] &quot;False&quot;
 DimPlot(VT_Control_2, group.by = &quot;predicted_doublets&quot;, pt.size = 0.01, cols = c(&quot;gray90&quot;, &quot;firebrick3&quot;), label = TRUE)</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-5.png" width="480" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-5">
+Past versions of unnamed-chunk-20-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-20-5.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(VT_Control_2, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 1, pt.size = 0.1)</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-21-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="data-normalization" class="section level2">
@@ -1179,11 +1748,85 @@ Negative:  CCL4, CCL3, XCL1, XCL2, CCL5, KLRB1, FOS, NKG7, ZFP36L2, AREG
 <h3>Data after filtering and normalization</h3>
 <pre class="r"><code>VlnPlot(VT, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-23-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>      orig.ident nCount_RNA nFeature_RNA percent.mt
 1: SeuratProject   3691.207         1344   1.762533
 2: SeuratProject   3432.213         1289   2.835001
 3: SeuratProject   4891.823         1641   2.630836</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-24-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Save the object! Before finishing up, let’s save this object to the
 data/ folder.</p>
 <pre class="r"><code>#Edit so it&#39;s saved to your folder
@@ -1207,6 +1850,43 @@ VT2 &lt;- RunUMAP(VT1, dims = 1:30, verbose = FALSE)</code></pre>
 VT2 &lt;- FindClusters(VT2, verbose = FALSE)</code></pre>
 <pre class="r"><code>DimPlot(VT2, label = TRUE) + NoLegend()</code></pre>
 <p><img src="figure/Jan_qc_VT224.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-1">
+Past versions of unnamed-chunk-29-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-29-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/meg3uab/VTsc/blob/f0295108cbfe6770763f2b213fa3b50881108737/docs/figure/Jan_qc_VT224.Rmd/unnamed-chunk-29-1.png" target="_blank">f029510</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="extract-meta-data" class="section level3">
 <h3>Extract meta data</h3>
 <pre class="r"><code>## extract meta data
