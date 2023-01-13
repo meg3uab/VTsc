@@ -1,14 +1,22 @@
 name: "VTsc"
 output_dir: ../docs
 navbar:
-  title: "VTsc"
+  title: "Vento-Tormo scRNAseq Reanalysis"
   left:
   - text: Home
     href: index.html
   - text: About
     href: about.html
-  - text: License
-    href: license.html
+  - text: VT062
+    href: Jan_qc_VT062.html
+  - text: VT218
+    href: Jan_qc_VT218.html
+  - text: VT221
+    href: Jan_qc_VT221.html
+  - text: VT224
+    href: Jan_qc_VT224.html
+  - text: VT881
+    href: Jan_qc_VT881.html
 output:
   workflowr::wflow_html:
     toc: yes

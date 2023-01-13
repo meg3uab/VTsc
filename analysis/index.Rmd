@@ -8,4 +8,4 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Welcome to MGs reanalysis of CD45+ decidual cells from the 2018 Nature publication ["Single-cell reconstruction of the early maternal–fetal interface in humans"](https://www.nature.com/articles/s41586-018-0698-6) (Vento-Tormo et. al, 2018).
