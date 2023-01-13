@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Morgan Greene" />
+
+<meta name="date" content="2023-01-13" />
+
+<title>Jan_Vento-Tormo scRNAseq Reanalysis</title>
+
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Vento-Tormo scRNAseq Reanalysis</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="Jan_qc_VT062.html">VT062</a>
+</li>
+<li>
+  <a href="Jan_qc_VT218.html">VT218</a>
+</li>
+<li>
+  <a href="Jan_qc_VT221.html">VT221</a>
+</li>
+<li>
+  <a href="Jan_qc_VT224.html">VT224</a>
+</li>
+<li>
+  <a href="Jan_qc_VT881.html">VT881</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Jan_Vento-Tormo scRNAseq Reanalysis</h1>
+<h4 class="author">Morgan Greene</h4>
+<h4 class="date">2023-01-13</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2023-01-13
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>VTsc/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20230113code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20230113)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20230113code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20230113)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong7da0329">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 7da0329
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong7da0329"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 7da0329.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  BuildWebsite.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/Jan_qc_VT881.Rmd</code>) and HTML
+(<code>docs/Jan_qc_VT881.html</code>) files. If you’ve configured a
+remote Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+7da0329
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+<td>
+publish VTsc
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="reanalysis-of-individual-d12-scrnaseq" class="section level2">
+<h2>Reanalysis of individual D12 scRNAseq</h2>
+<div id="information-is-the-following" class="section level4">
+<h4>Information is the following:</h4>
+<pre><code>- Run Name: FCA7511881
+- Organism part: Decidua
+- FACS marker: CD45+
+- Clinical information: 6-12 wks gestation</code></pre>
+<div
+id="for-the-individual-d12-cells-were-sorted-by-cd45-expression-and-in-total-3477-decidual-cells-cd45-and-cd45--were-analyzed-via-10x-genomics.-the-authors-do-not-state-how-many-of-each-were-sorted."
+class="section level5">
+<h5>For the individual D12, cells were sorted by CD45 expression and in
+total, 3477 decidual cells (CD45+ and CD45-) were analyzed via
+10x-genomics. <em>The authors do not state how many of each were
+sorted.</em></h5>
+</div>
+</div>
+</div>
+<div id="downstream-analysis" class="section level2">
+<h2>Downstream Analysis</h2>
+<div id="load-required-packages" class="section level3">
+<h3>Load Required Packages</h3>
+<pre class="r"><code>suppressPackageStartupMessages({
+# Package names
+packages &lt;- c(&quot;devtools&quot;, &quot;Seurat&quot;, &quot;ggplot2&quot;, &quot;tidyr&quot;, &quot;patchwork&quot;, &quot;SeuratData&quot;, &quot;reshape2&quot;, &quot;knitr&quot;, &quot;SeuratWrappers&quot;, &quot;dplyr&quot;, &quot;hdf5r&quot;, &quot;ape&quot;, &quot;Rfast2&quot;, &quot;RColorBrewer&quot;, &quot;data.table&quot;, &quot;tidyverse&quot;, &quot;magrittr&quot;, &quot;gridExtra&quot;, &quot;cowplot&quot;, &quot;Matrix&quot;, &quot;reticulate&quot;, &quot;monocle3&quot;, &quot;WebGestaltR&quot;, &quot;harmony&quot;, &quot;MAST&quot;, &quot;purrr&quot;, &quot;usefun&quot;, &quot;formattable&quot;, &quot;splitstackshape&quot;, &quot;formatR&quot;, &quot;venn&quot;, &quot;VennDiagram&quot;, &quot;Hmisc&quot;, &quot;interp&quot;, &quot;SoupX&quot;, &quot;DropletUtils&quot;, &quot;writexl&quot;)
+# Install packages not yet installed
+installed_packages &lt;- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+})</code></pre>
+<p>We’ll start by assessing and removing ambient RNA in our dataset
+before proceeding with further downstream QC and analyses</p>
+</div>
+<div id="remove-ambient-rna-using-soupx" class="section level3">
+<h3><a
+href="https://academic.oup.com/gigascience/article/9/12/giaa151/6049831">Remove
+ambient RNA using SoupX</a></h3>
+<p>Dropseq scRNAseq assumes all acquired RNAs are endogenous to cells.
+However, any RNAs contained in the input droplet are also captured by
+these assays. Sequencing of cell free RNA creates background
+contamination that can confound the correct biological interpretation of
+sc transcriptomic data. Contamination from this “soup” of cell free RNAs
+is ubiquitous, experiment specific (in composition and magnitude), and
+can lead to erroneous biological conclusions. <a
+href="https://www.rdocumentation.org/packages/SoupX/versions/1.6.2"><strong>SoupX</strong></a>
+is a method used for quantifying the extent of the contamination and
+estimating “background corrected”, cell expression profiles that can be
+integrated with existing downstream analysis tools. soupX reduces batch
+effects, strengthens cell-specific quality control and improves
+biological interpretation</p>
+<p>The method to do this consists of three parts:</p>
+<p>1.Calculate the profile of the soup.</p>
+<p>2.Estimate the cell specific contamination fraction.</p>
+<p>3.Infer a corrected expression matrix.</p>
+<p>Various approaches of estimating and removing soup contamination: <a
+href="https://cran.r-project.org/web/packages/SoupX/readme/README.html"
+class="uri">https://cran.r-project.org/web/packages/SoupX/readme/README.html</a>
+<a
+href="https://rawcdn.githack.com/constantAmateur/SoupX/204b602418df12e9fdb4b68775a8b486c6504fe4/inst/doc/pbmcTutorial.html"
+class="uri">https://rawcdn.githack.com/constantAmateur/SoupX/204b602418df12e9fdb4b68775a8b486c6504fe4/inst/doc/pbmcTutorial.html</a></p>
+<p>We use the <strong>automatic method</strong> to estimate the
+contamination fraction and decontaminate data. Leverages clustering
+information from cellranger.</p>
+<pre class="r"><code>sc1 = load10X(&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs&quot;)
+sc1 = autoEstCont(sc1)
+out1 = adjustCounts(sc1)
+DropletUtils:::write10xCounts(&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/vt881_soupX_filtered&quot;, out1) #we shall use results from this run</code></pre>
+</div>
+<div id="load-soupx_filtered-data" class="section level3">
+<h3>Load soupX_Filtered Data</h3>
+<p>Load in <strong>soupX_Filtered</strong> data and filter the
+<strong>filtered_feature_bc_matrix</strong> data object based on the
+soupX corrected data.</p>
+<p><em>Note that the RNA assay in filtered_feature_bc_matrix should be
+the same as that in the soupX_Filtered object.</em></p>
+<pre class="r"><code>#Loading soupX filtered data
+soupX_Filtered &lt;- Read10X(data.dir = &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/vt881_soupX_filtered&quot;)
+str(soupX_Filtered)
+Formal class &#39;dgCMatrix&#39; [package &quot;Matrix&quot;] with 6 slots
+  ..@ i       : int [1:1294374] 73 113 143 170 208 492 513 521 524 559 ...
+  ..@ p       : int [1:1986] 0 586 1105 1794 3123 3886 4475 5022 6028 6939 ...
+  ..@ Dim     : int [1:2] 36601 1985
+  ..@ Dimnames:List of 2
+  .. ..$ : chr [1:36601] &quot;MIR1302-2HG&quot; &quot;FAM138A&quot; &quot;OR4F5&quot; &quot;AL627309.1&quot; ...
+  .. ..$ : chr [1:1985] &quot;AAACCTGCAGTGAGTG-1&quot; &quot;AAACCTGGTTCCACAA-1&quot; &quot;AAACCTGTCGAATGGG-1&quot; &quot;AAACGGGAGAAACGAG-1&quot; ...
+  ..@ x       : num [1:1294374] 0.976 1.93 0.903 1.912 0.956 ...
+  ..@ factors : list()
+
+dim(soupX_Filtered)
+[1] 36601  1985
+
+dataDir &lt;- &#39;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/filtered_feature_bc_matrix&#39;
+data &lt;- Read10X(data.dir = dataDir)
+str(data)
+Formal class &#39;dgCMatrix&#39; [package &quot;Matrix&quot;] with 6 slots
+  ..@ i       : int [1:1294374] 73 113 143 170 208 492 513 521 524 559 ...
+  ..@ p       : int [1:1986] 0 586 1105 1794 3123 3886 4475 5022 6028 6939 ...
+  ..@ Dim     : int [1:2] 36601 1985
+  ..@ Dimnames:List of 2
+  .. ..$ : chr [1:36601] &quot;MIR1302-2HG&quot; &quot;FAM138A&quot; &quot;OR4F5&quot; &quot;AL627309.1&quot; ...
+  .. ..$ : chr [1:1985] &quot;AAACCTGCAGTGAGTG-1&quot; &quot;AAACCTGGTTCCACAA-1&quot; &quot;AAACCTGTCGAATGGG-1&quot; &quot;AAACGGGAGAAACGAG-1&quot; ...
+  ..@ x       : num [1:1294374] 1 2 1 2 1 1 1 1 8 1 ...
+  ..@ factors : list()
+
+dim(data)
+[1] 36601  1985</code></pre>
+<p>Dim result shows 2 numbers: features/genes &amp; cells We have same
+dims but soupX filtered is corrected, so counts may be different</p>
+<p>Next, check that all cells and genes are in both datasets and in the
+same order</p>
+<pre class="r"><code>soupX_fg &lt;- as.data.frame(rownames(soupX_Filtered)) 
+#all genes (row names) from filtered gene expression soupx, note that this object only has the RNA assay
+soupX_Filtered_cells &lt;- as.data.frame(colnames(soupX_Filtered)) 
+#all cells (col names) from filtered gene expression soupx 
+
+data_genes &lt;- as.data.frame(rownames(data)) 
+#GEX (cellranger output)
+data_cells &lt;- as.data.frame(colnames(data)) 
+#GEX (cellranger output)</code></pre>
+<p>True or False: All soupX filtered genes/cells are in original
+output</p>
+<pre class="r"><code>
+all(soupX_fg %in% data_genes)
+[1] TRUE
+
+all(data_genes %in% soupX_fg) 
+[1] TRUE
+
+all.equal(soupX_fg$`rownames(soupX_Filtered)`, data_genes$`rownames(data)`)
+[1] TRUE
+
+all(data_cells %in% soupX_Filtered_cells)
+[1] TRUE
+
+all(soupX_Filtered_cells %in% data_cells) 
+[1] TRUE
+
+all.equal(soupX_Filtered_cells$`colnames(soupX_Filtered)`, data_cells$`colnames(data)`)
+[1] TRUE
+
+all.equal(data, soupX_Filtered)
+[1] &quot;Mean relative difference: 0.0401604&quot;
+
+#Because the genes and cells are the same, we will use the corrected soupX object instead of GEX assay,
+mean(data)
+[1] 0.0506286
+
+mean(soupX_Filtered) 
+[1] 0.04860346
+
+mean(rowMeans(soupX_Filtered))
+[1] 0.04860346
+
+#Replacing data RNA assay with the soupX_Filtered data
+data &lt;- soupX_Filtered
+mean(data) #data mean should now equal soupX_Filtered mean
+[1] 0.04860346</code></pre>
+</div>
+<div id="create-a-seurat-object-for-analysis" class="section level3">
+<h3>Create a Seurat object for analysis</h3>
+<pre class="r"><code>vt881_jan &lt;- CreateSeuratObject(counts = data, min.cells = 3, min.features = 200)
+Assays(vt881_jan)
+An object of class &quot;SimpleAssays&quot;
+Slot &quot;data&quot;:
+List of length 1
+
+class(vt881_jan)
+[1] &quot;Seurat&quot;
+attr(,&quot;package&quot;)
+[1] &quot;SeuratObject&quot;
+
+saveRDS(vt881_jan, &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/vt881_soupX_filtered/vt881_jan_SeuratObj.rds&quot;)</code></pre>
+<p>###Perform pre-processing and dimensional reduction.</p>
+<p><strong>Single-cell gene expression:</strong> scRNA-seq data is
+analysed using standard pipelines in Seurat which include normalization,
+feature selection, and dimensional reduction with PCA.</p>
+<div id="quality-control-qc" class="section level4">
+<h4>Quality Control (QC)</h4>
+<pre class="r"><code>VT &lt;- vt881_jan
+
+#Specify which assay we are working with like so:
+DefaultAssay(VT) &lt;- &#39;RNA&#39; 
+#Check if correct. Should be RNA
+DefaultAssay(VT) 
+[1] &quot;RNA&quot;
+
+#View Metadata
+head(VT@meta.data)
+                      orig.ident nCount_RNA nFeature_RNA
+AAACCTGCAGTGAGTG-1 SeuratProject   1578.940          581
+AAACCTGGTTCCACAA-1 SeuratProject   1127.927          516
+AAACCTGTCGAATGGG-1 SeuratProject   1262.221          688
+AAACGGGAGAAACGAG-1 SeuratProject   4013.532         1320
+AAACGGGAGCACAGGT-1 SeuratProject   1811.964          749
+AAACGGGTCTTAGCCC-1 SeuratProject   1324.290          585
+
+#We&#39;ll store the percentage of reads that map to the mitochondrial genome in the metadata object as &quot;percent.mt&quot;
+VT &lt;- PercentageFeatureSet(VT, pattern = &quot;^MT-&quot;, col.name = &quot;percent.mt&quot;)
+head(VT@meta.data)
+                      orig.ident nCount_RNA nFeature_RNA percent.mt
+AAACCTGCAGTGAGTG-1 SeuratProject   1578.940          581 1.28619991
+AAACCTGGTTCCACAA-1 SeuratProject   1127.927          516 1.30040839
+AAACCTGTCGAATGGG-1 SeuratProject   1262.221          688 2.66206470
+AAACGGGAGAAACGAG-1 SeuratProject   4013.532         1320 0.07141299
+AAACGGGAGCACAGGT-1 SeuratProject   1811.964          749 2.56947390
+AAACGGGTCTTAGCCC-1 SeuratProject   1324.290          585 1.49176393
+
+p1 &lt;- VlnPlot(VT, features = c(&quot;nFeature_RNA&quot;), ncol = 1) + theme_light(base_size = 14) + theme(legend.position = &quot;none&quot;, plot.title = element_text(size = 14, face = &quot;bold&quot;, hjust = 0.5))
+p2 &lt;- VlnPlot(VT, features = c(&quot;nCount_RNA&quot;), ncol = 1) + theme_light(base_size = 14) + theme(legend.position = &quot;none&quot;, plot.title = element_text(size = 14, face = &quot;bold&quot;, hjust = 0.5))
+p3 &lt;- VlnPlot(VT, features = c(&quot;percent.mt&quot;), ncol = 1) + theme_light(base_size = 14) + theme(legend.position = &quot;none&quot;, plot.title = element_text(size = 14, face = &quot;bold&quot;, hjust = 0.5))
+
+grid.arrange(p1, p2, p3, ncol=3)</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Feature Scatter Plots: nFeature_RNA is the number of genes detected
+in each cell. nCount_RNA is the total number of molecules detected
+within a cell. The number above each plot denotes the correlations
+between x-axis and y-axis.</p>
+<pre class="r"><code>plot1 &lt;- FeatureScatter(VT, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;percent.mt&quot;)
+plot2 &lt;- FeatureScatter(VT, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;nFeature_RNA&quot;)
+plot1 + plot2</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-8-1.png" width="1920" style="display: block; margin: auto;" /></p>
+<p>Violin Plot of the data and distributions</p>
+<pre><code>      orig.ident nCount_RNA nFeature_RNA percent.mt
+1: SeuratProject   1578.940          581   1.286200
+2: SeuratProject   1127.927          516   1.300408
+3: SeuratProject   1262.221          688   2.662065</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="editing-metadata" class="section level4">
+<h4>Editing Metadata</h4>
+<pre class="r"><code>metadata &lt;- VT@meta.data
+
+# Add cell IDs to metadata
+metadata$cells &lt;- rownames(metadata)
+
+# Rename columns
+metadata &lt;- metadata %&gt;%
+        dplyr::rename(nUMI = nCount_RNA,
+                      nGene = nFeature_RNA)
+
+unique(metadata$orig.ident)
+[1] SeuratProject
+Levels: SeuratProject
+
+# Visualize the number of cells
+metadata %&gt;% 
+  ggplot(aes(x=orig.ident, fill=orig.ident)) + 
+  geom_bar(color = &quot;gray80&quot;, fill = &quot;gray80&quot;) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  theme(plot.title = element_text(hjust=0.5, face=&quot;bold&quot;)) +
+  ggtitle(&quot;NCells&quot;) + theme(legend.position = &quot;none&quot;) + 
+  theme(legend.position = &quot;none&quot;) + 
+  geom_text(stat=&#39;count&#39;, aes(label=..count..), vjust = 0.5)
+Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
+ℹ Please use `after_stat(count)` instead.</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-10-1.png" width="192" style="display: block; margin: auto;" /></p>
+</div>
+<div id="number-umismolecules-per-cell" class="section level4">
+<h4>Number UMIs/molecules per cell</h4>
+<pre class="r"><code>#Visualize the number UMIs/molecules per cell
+metadata  %&gt;% 
+    ggplot(aes(color=orig.ident, x=nUMI, fill= orig.ident)) + 
+    geom_density(alpha = 0.3, color=&quot;gray70&quot;, fill=&quot;gray70&quot;) + 
+    scale_x_log10() + 
+    theme_classic() +
+    ylab(&quot;Cell density/UMI counts per cell&quot;) +
+    geom_vline(xintercept = 500) + theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-11-1.png" width="384" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#The UMI counts per cell should generally be above 500, that is the low end of what we expect. If UMI counts are between 500-1000 counts, it is usable but the cells probably should have been sequenced more deeply</code></pre>
+</div>
+<div id="more-qc" class="section level4">
+<h4>More QC</h4>
+<pre class="r"><code>counts &lt;- Matrix(VT@assays$RNA@counts)
+counts_per_cell &lt;- Matrix::colSums(counts)
+counts_per_gene &lt;- Matrix::rowSums(counts)
+genes_per_cell &lt;- Matrix::colSums(counts&gt;0) #count a gene only if it has non-zero reads mapped.
+cells_per_gene &lt;- Matrix::rowSums(counts&gt;0) #only count cells where the gene is expressed
+
+counts_per_cell &lt;- as.data.frame(colSums(counts))
+counts_per_gene &lt;- as.data.frame(rowSums(counts))
+genes_per_cell &lt;- as.data.frame(colSums(counts&gt;0)) 
+cells_per_gene &lt;- as.data.frame(rowSums(counts&gt;0) )
+
+colnames(counts_per_cell) &lt;- &quot;counts&quot;
+colnames(counts_per_gene) &lt;- &quot;counts&quot;
+colnames(genes_per_cell) &lt;- &quot;genes_per_cell&quot;
+colnames(cells_per_gene) &lt;- &quot;cells_per_gene&quot;
+
+df &lt;- cbind(counts_per_cell, genes_per_cell)
+
+ggplot(df, aes(x=counts, y=genes_per_cell)) + geom_point(color=&quot;gray30&quot;) + scale_y_continuous(trans=&#39;log10&#39;) + scale_x_continuous(trans=&#39;log10&#39;) + theme_light()</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-12-1.png" width="576" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Plot cells ranked by their number of detected genes.
+genes_per_cell$cells &lt;- rownames(genes_per_cell)
+
+#set upper and lower thresholds for genes per cell - the upper and lower limit curve bends give a good clue on what thresholds to set:
+min_genes_per_cell &lt;- 200  
+max_genes_per_cell &lt;- 4000 
+
+ggplot(genes_per_cell, aes(x=reorder(genes_per_cell, cells), y=genes_per_cell)) + geom_point() + 
+  scale_y_continuous(trans=&#39;log10&#39;, breaks=seq(0, 5000, by = 1000)) + ggtitle(&quot;Genes per Cell&quot;) + theme_test(base_size = 12) + 
+  geom_hline(aes(yintercept=min_genes_per_cell),
+             color=&quot;blue&quot;, linetype=&quot;dashed&quot;, size=0.5) + 
+  geom_hline(aes(yintercept=max_genes_per_cell), color=&quot;blue&quot;, linetype=&quot;dashed&quot;, size=0.5) + labs(x= &quot;Cells&quot;, y=&quot;Number of Genes&quot;) + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), plot.title = element_text(size = 14, face = &quot;bold&quot;, hjust = 0.5)) </code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-12-2.png" width="576" style="display: block; margin: auto;" /></p>
+</div>
+<div id="percent-mt-distribution" class="section level4">
+<h4>Percent MT Distribution</h4>
+<pre class="r"><code>#Density plot
+ggplot(VT@meta.data, aes(x=VT@meta.data$percent.mt)) +
+  geom_density() + scale_color_manual(values=c(&quot;blue&quot;)) + theme_classic() +
+geom_vline(aes(xintercept=mean(VT@meta.data$percent.mt)),
+            color=&quot;blue&quot;, linetype=&quot;dashed&quot;, size=0.5) +scale_x_continuous(breaks=seq(0, 100, by = 5))</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-13-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<div
+id="data-filtering-calculate-value-in-the-93rd-percentile-for-a-hint-on-thresholds"
+class="section level5">
+<h5>Data filtering: calculate value in the 93rd percentile for a hint on
+thresholds</h5>
+<pre class="r"><code>(Count93_nCount_RNA &lt;- quantile(VT@meta.data$nCount_RNA, 0.93))
+    93% 
+3870.74 
+
+(Count93_nFeature_RNA &lt;- quantile(VT@meta.data$nFeature_RNA, 0.93))
+    93% 
+1153.52 
+
+(Count93_percent_mt &lt;-  quantile(VT@meta.data$percent.mt, 0.93))
+    93% 
+3.96918 
+
+summary(VT@meta.data$nCount_RNA)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  487.9  1011.7  1374.3  1777.2  2083.3 11725.2 
+
+summary(VT@meta.data$nFeature_RNA)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  216.0   452.0   560.0   648.3   757.0  2412.0 </code></pre>
+</div>
+</div>
+</div>
+<div id="set-thresholds-for-seurat-object" class="section level3">
+<h3>Set thresholds for Seurat object</h3>
+<pre class="r"><code>VT &lt;- subset(VT, subset = nFeature_RNA &gt; 200 &amp; nFeature_RNA &lt; 4000 &amp; percent.mt &lt; 10)
+
+saveRDS(VT, &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/vt881_soupX_filtered/PREscrublet_vt881.rds&quot;)</code></pre>
+</div>
+</div>
+<div id="doublet-removal" class="section level2">
+<h2>Doublet Removal</h2>
+<p>Detection of doublets was conducting in python using <a
+href="https://github.com/swolock/scrublet">scrublet</a> and a file
+containing scrublet calls/predictions was written out. This file was
+then loaded into R to use as a basis for filtering out doublets.</p>
+<p>Visualization of the doublet predictions in a 2-D embedding/UAMP.
+Predicted doublets should mostly co-localize (possibly in multiple
+clusters). If they do not, you may need to adjust the doublet score
+threshold, or change the pre-processing parameters to better resolve the
+cell states present in your data.</p>
+<p><img src="../../../../Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/scrublet_imgs/vt881_cell_16_output_1.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>The simulated doublet histogram below should typically be bimodal.
+The left mode corresponds to “embedded” doublets generated by two cells
+with similar gene expression. The right mode corresponds to “neotypic”
+doublets, which are generated by cells with distinct gene expression
+(e.g., different cell types) and are expected to introduce more
+artifacts in downstream analyses. Scrublet can only detect neotypic
+doublets. This histogram is an important diagnostic plot. Doublet score
+threshold should separate the two shoulders of the bimodal distribution
+as shown below:</p>
+<p><img src="../../../../Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/scrublet_imgs/vt881_cell_14_output_2.png" width="70%" style="display: block; margin: auto;" /></p>
+<p>###Load in scrublet predictions</p>
+<pre class="r"><code>dim(scrublet_calls &lt;- read.csv(&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/vt881_soupX_filtered/scrublet_calls.csv&quot;)) 
+[1] 1985    3
+
+table(scrublet_calls$predicted_doublets) 
+
+False  True 
+ 1983     2 
+#Doublets = True
+
+dim(scrublet_calls &lt;- scrublet_calls[which(scrublet_calls$X %in% rownames(VT@meta.data)),])
+[1] 1964    3
+
+rownames(scrublet_calls) &lt;- scrublet_calls$X
+scrublet_calls$X &lt;-NULL
+dim(scrublet_calls)
+[1] 1964    2
+
+#Adding doublet info to metadata
+#First we&#39;ll ensure that the rownames in VT match the rownames in scrublet_calls. AddMetaData maps rownames but we&#39;ll still do so to ensure that mapping of predictions are made to respective barcodes
+scrublet_calls &lt;- scrublet_calls[rownames(VT@meta.data), ]
+head(rownames(scrublet_calls))
+[1] &quot;AAACCTGCAGTGAGTG-1&quot; &quot;AAACCTGGTTCCACAA-1&quot; &quot;AAACCTGTCGAATGGG-1&quot;
+[4] &quot;AAACGGGAGAAACGAG-1&quot; &quot;AAACGGGAGCACAGGT-1&quot; &quot;AAACGGGTCTTAGCCC-1&quot;
+
+head(rownames(VT@meta.data))
+[1] &quot;AAACCTGCAGTGAGTG-1&quot; &quot;AAACCTGGTTCCACAA-1&quot; &quot;AAACCTGTCGAATGGG-1&quot;
+[4] &quot;AAACGGGAGAAACGAG-1&quot; &quot;AAACGGGAGCACAGGT-1&quot; &quot;AAACGGGTCTTAGCCC-1&quot;
+
+all(rownames(scrublet_calls) %in% rownames(VT@meta.data))
+[1] TRUE</code></pre>
+<pre class="r"><code>VT &lt;- AddMetaData(VT, scrublet_calls)</code></pre>
+<div id="pre-normalized-visualization" class="section level3">
+<h3>Pre-Normalized Visualization</h3>
+<pre class="r"><code>#Without normalizing the data, we want to first visualize the doublets in our datasets
+VT_Control_2 &lt;- VT
+VT_Control_2 &lt;- FindVariableFeatures(VT_Control_2, selection.method = &quot;vst&quot;, nfeatures = 2500)
+VT_Control_2 &lt;- ScaleData(object = VT_Control_2, scale.max = 30,  verbose = FALSE)
+VT_Control_2 &lt;- RunPCA(object = VT_Control_2, npcs = 30, verbose = FALSE)
+VT_Control_2 &lt;- FindNeighbors(VT_Control_2, dims = 1:20, verbose = TRUE, reduction = &quot;pca&quot;)
+Computing nearest neighbor graph
+Computing SNN
+VT_Control_2 &lt;- RunUMAP(VT_Control_2, dims = 1:20, verbose = TRUE, reduction = &quot;pca&quot;)
+Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
+To use Python UMAP via reticulate, set umap.method to &#39;umap-learn&#39; and metric to &#39;correlation&#39;
+This message will be shown once per session
+14:07:31 UMAP embedding parameters a = 0.9922 b = 1.112
+14:07:31 Read 1964 rows and found 20 numeric columns
+14:07:31 Using Annoy for neighbor search, n_neighbors = 30
+14:07:31 Building Annoy index with metric = cosine, n_trees = 50
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+**************************************************|
+14:07:31 Writing NN index file to temp file /var/folders/0d/g9q0mtm13sbg08c7pryg5gk40000gn/T//RtmpOXluqt/file2f926791ef74
+14:07:31 Searching Annoy index using 1 thread, search_k = 3000
+14:07:31 Annoy recall = 100%
+14:07:32 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+14:07:33 Initializing from normalized Laplacian + noise (using irlba)
+14:07:33 Commencing optimization for 500 epochs, with 85402 positive edges
+14:07:37 Optimization finished
+VT_Control_2 &lt;- FindClusters(VT_Control_2, verbose = TRUE, reduction = &quot;pca&quot;) #Resolution can be adjusted - leaving to default for now in test dataset
+Warning: The following arguments are not used: reduction
+Warning: The following arguments are not used: reduction
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 1964
+Number of edges: 75883
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8343
+Number of communities: 11
+Elapsed time: 0 seconds
+
+FeaturePlot(VT_Control_2, features = &quot;doublet_scores&quot;, pt.size = 0.01)</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-20-1.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>
+DimPlot(VT_Control_2, group.by = &quot;predicted_doublets&quot;, pt.size = 0.01, cols = c(&quot;gray90&quot;, &quot;firebrick3&quot;))</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-20-2.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>
+#Checking the nUMI for doublets and singlets
+VlnPlot(VT_Control_2,
+        features = &quot;nCount_RNA&quot;,
+        pt.size = 0,
+        group.by = &quot;predicted_doublets&quot;) + NoLegend()</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-20-3.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>
+#Fractions of doublets per cluster
+df &lt;- data.table(VT_Control_2@meta.data)
+
+perc &lt;- as.data.frame(df %&gt;%
+                        group_by(seurat_clusters, predicted_doublets) %&gt;%
+                        dplyr::summarise(cnt = n()) %&gt;%
+                        mutate(freq = formattable::percent(cnt / sum(cnt), digits = 5)))
+`summarise()` has grouped output by &#39;seurat_clusters&#39;. You can override using
+the `.groups` argument.
+
+perc$predicted_doublets &lt;- as.character(perc$predicted_doublets)
+perc$predicted_doublets[perc$predicted_doublets == &quot;True&quot;] &lt;- &quot;Doublet&quot;
+perc$predicted_doublets[perc$predicted_doublets == &quot;False&quot;] &lt;- &quot;Singlet&quot;
+
+perc %&gt;% 
+  ggplot() +
+  geom_bar(aes(x = seurat_clusters, y=freq,
+               group = predicted_doublets,
+               fill = predicted_doublets),
+           stat = &quot;identity&quot;, width = 0.99, alpha = 0.8) +
+  theme_test()+ 
+  labs(y=paste0(&quot;% Distribution of doublets and singlets per cluster&quot;), x=&quot;&quot;) +
+  scale_fill_manual(values = c(&quot;Doublet&quot; = &#39;red3&#39;, &quot;Singlet&quot; = &quot;gray80&quot;)) +
+  theme(legend.position = &quot;right&quot;) +scale_y_continuous(expand = c(0,0))</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-20-4.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>
+#Next we&#39;ll remove the doublets and see what the data looks like
+VT_Control_2 &lt;- VT_Control_2[, VT_Control_2@meta.data[, &quot;predicted_doublets&quot;] == &quot;False&quot;]
+unique(VT_Control_2@meta.data$predicted_doublets)
+[1] &quot;False&quot;
+DimPlot(VT_Control_2, group.by = &quot;predicted_doublets&quot;, pt.size = 0.01, cols = c(&quot;gray90&quot;, &quot;firebrick3&quot;), label = TRUE)</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-20-5.png" width="480" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>VlnPlot(VT_Control_2, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 1, pt.size = 0.1)</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="data-normalization" class="section level2">
+<h2>Data Normalization</h2>
+<p>After removing unwanted cells from the dataset, the next step is to
+normalize the data. Apply SCTransform (Hafemeister and Satija, 2019) to
+normalize gene expression data. <a
+href="https://www.sciencedirect.com/science/article/pii/S0092867421005833"
+class="uri">https://www.sciencedirect.com/science/article/pii/S0092867421005833</a></p>
+<pre class="r"><code>VT &lt;- VT[, VT@meta.data[, &quot;predicted_doublets&quot;] == &quot;False&quot;]
+unique(VT@meta.data$predicted_doublets)</code></pre>
+<pre><code>[1] &quot;False&quot;</code></pre>
+<pre class="r"><code># Noramlizing the data using SCTransform, here I am also removing mitochondrial mapping percentage which is a confounding source of variation
+#Note that the single command SCTransform() replaces NormalizeData(), ScaleData(), and FindVariableFeatures().
+#https://satijalab.org/seurat/articles/sctransform_vignette.html
+DefaultAssay(VT) &lt;- &#39;RNA&#39;
+VT &lt;- SCTransform(VT, vars.to.regress = &quot;percent.mt&quot;, verbose = FALSE) %&gt;% RunPCA()</code></pre>
+<pre><code>PC_ 1 
+Positive:  GNLY, NKG7, GZMA, GZMB, TRDC, XCL1, CTSW, IFITM1, CMC1, KLRB1 
+       XCL2, IL32, CD7, KLRC1, IFITM2, HOPX, SPINK2, KLRD1, COTL1, IL2RB 
+       RPS19, CCL5, CST7, GSTP1, GZMH, KLRK1, CD69, RPS27A, CD52, PRF1 
+Negative:  FTL, FTH1, CXCL8, CCL3, CD74, CXCL2, HLA-DRA, CXCL3, C1QA, IL1B 
+       CCL3L1, HLA-DRB1, SAT1, CST3, IER3, C1QB, SOD2, C1QC, G0S2, LYZ 
+       AIF1, HLA-DPB1, RNASE1, PLAUR, PSAP, C15orf48, S100A9, BCL2A1, IFI30, HLA-DPA1 
+PC_ 2 
+Positive:  C1QA, CD74, C1QB, C1QC, SELENOP, CST3, HLA-DRA, HLA-DRB1, HLA-DPB1, HLA-DPA1 
+       CD14, RNASE1, HLA-DQA1, FOLR2, FOS, STAB1, AIF1, HLA-DQB1, HSPA1A, LGMN 
+       MS4A6A, SLC40A1, PLTP, PSAP, HSPA1B, F13A1, MS4A4A, DAB2, TMSB10, C1orf54 
+Negative:  CXCL8, CXCL2, IL1B, FTH1, CXCL3, CCL3L1, CCL3, SOD2, G0S2, BCL2A1 
+       CCL20, EREG, C15orf48, CCL4, CCL4L2, IL1RN, PLAUR, NFKBIA, GNLY, TIMP1 
+       PTGS2, IER3, LUCAT1, S100A8, OLR1, SAT1, PLIN2, S100A6, SPP1, TNF 
+PC_ 3 
+Positive:  TAGLN, DCN, MYL9, ACTA2, CFD, RAMP1, HSPB1, APOD, TPM2, MGP 
+       SERPINF1, S100A6, IGFBP7, PCOLCE, CALD1, IGFBP5, LUM, C11orf96, CCN1, SPARCL1 
+       IGFBP6, PTGDS, RBP1, C1R, TPM1, FBLN1, MDK, TIMP3, SELENOM, DKK1 
+Negative:  GNLY, NKG7, C1QA, C1QB, CCL4, GZMA, GZMB, TYROBP, C1QC, TRDC 
+       CTSW, FTL, XCL1, CCL3, CMC1, RNASE1, FCER1G, XCL2, SELENOP, KLRC1 
+       CD14, CD7, HOPX, IFITM1, COTL1, KLRD1, CD74, SPINK2, PSAP, STAB1 
+PC_ 4 
+Positive:  CD74, HLA-DPB1, HLA-DRA, LYZ, HLA-DPA1, HLA-DRB1, LGALS2, LTB, AC020656.1, HLA-DQA1 
+       FCN1, HLA-DQB1, CD52, CXCR4, LST1, CD3D, CST3, GPR183, RPS12, CD69 
+       RPS27, CLEC10A, PLAC8, RPS4X, JCHAIN, TRAC, DNASE1L3, RGS2, G0S2, CPVL 
+Negative:  GNLY, RNASE1, NKG7, CCL4, C1QA, CCL3, C1QB, SELENOP, LGALS1, STAB1 
+       LGMN, C1QC, PSAP, IFITM3, CD14, SPP1, IGFBP7, GZMA, CTSL, PLTP 
+       CTSW, CTSD, FTL, TRDC, CFD, GZMB, CTSB, CMC1, CTSZ, CCL4L2 
+PC_ 5 
+Positive:  LTB, CD3D, CD69, TRAC, RNASE1, CD52, CXCR4, LINC01871, TRBC1, TRBC2 
+       CCL5, HMGB2, STMN1, CD3G, CRIP1, IL32, STAB1, S100A4, JUN, SPP1 
+       LIME1, DNAJB1, CLEC2D, HIST1H4C, RPS27, LGMN, AC026979.2, CD27, RPS12, MT2A 
+Negative:  GNLY, HLA-DRA, HLA-DPB1, LYZ, NKG7, CD74, CST3, HLA-DPA1, HLA-DRB1, GZMB 
+       LGALS2, HLA-DQA1, AC020656.1, CTSW, GZMA, FCN1, TYROBP, TRDC, GSTP1, CMC1 
+       KLRC1, HLA-DQB1, SPINK2, HOPX, COTL1, LGALS1, IGFBP7, CLEC10A, CD7, FCER1G </code></pre>
+<div id="data-after-filtering-and-normalization" class="section level3">
+<h3>Data after filtering and normalization</h3>
+<pre class="r"><code>VlnPlot(VT, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>      orig.ident nCount_RNA nFeature_RNA percent.mt
+1: SeuratProject   1578.940          581   1.286200
+2: SeuratProject   1127.927          516   1.300408
+3: SeuratProject   1262.221          688   2.662065</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Save the object! Before finishing up, let’s save this object to the
+data/ folder.</p>
+<pre class="r"><code>#Edit so it&#39;s saved to your folder
+saveRDS(VT, &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/vt881qc.rds&quot;)</code></pre>
+<pre class="r"><code># Load the seurat object into the environment
+#VT &lt;- readRDS(&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/vt881qc.rds&quot;)</code></pre>
+<p>We can now use these results for downstream analysis, such as
+visualization and clustering.</p>
+</div>
+</div>
+<div id="perform-linear-dimensional-reduction" class="section level2">
+<h2>Perform linear dimensional reduction</h2>
+<p>Next we perform PCA on the scaled data. By default, only the
+previously determined 2000 variable features are used as input, but can
+be defined using features argument if you wish to choose a different
+subset.</p>
+<pre class="r"><code># These are now standard steps in the Seurat workflow for visualization and clustering
+VT1 &lt;- RunPCA(VT, verbose = FALSE)
+VT2 &lt;- RunUMAP(VT1, dims = 1:30, verbose = FALSE)</code></pre>
+<pre class="r"><code>VT2 &lt;- FindNeighbors(VT2, dims = 1:30, verbose = FALSE)
+VT2 &lt;- FindClusters(VT2, verbose = FALSE)</code></pre>
+<pre class="r"><code>DimPlot(VT2, label = TRUE) + NoLegend()</code></pre>
+<p><img src="figure/Jan_qc_VT881.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="extract-meta-data" class="section level3">
+<h3>Extract meta data</h3>
+<pre class="r"><code>## extract meta data
+md &lt;- VT2@meta.data %&gt;% as.data.table
+knitr::kable(md, caption = &quot;Integrated Meta Data&quot;)
+write_xlsx(md, path = &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/jan_metadata.xlsx&quot;)</code></pre>
+</div>
+<div id="determine-cell-number" class="section level3">
+<h3>Determine Cell Number</h3>
+<pre class="r"><code># How many cells are in each cluster
+# Get cell identity classes
+## count the number of cells per unique combinations of &quot;Sample&quot; and &quot;seurat_clusters&quot;
+## with additional casting after the counting
+totalcells &lt;- md[, .N, by = c( &quot;orig.ident&quot;, &quot;seurat_clusters&quot;)] %&gt;% dcast(., orig.ident ~ seurat_clusters, value.var = &quot;N&quot;)
+knitr::kable(totalcells, caption = &quot;Total Cells per Cluster&quot;)</code></pre>
+<table>
+<caption>Total Cells per Cluster</caption>
+<thead>
+<tr class="header">
+<th align="left">orig.ident</th>
+<th align="right">0</th>
+<th align="right">1</th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+<th align="right">5</th>
+<th align="right">6</th>
+<th align="right">7</th>
+<th align="right">8</th>
+<th align="right">9</th>
+<th align="right">10</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SeuratProject</td>
+<td align="right">375</td>
+<td align="right">296</td>
+<td align="right">265</td>
+<td align="right">248</td>
+<td align="right">226</td>
+<td align="right">165</td>
+<td align="right">125</td>
+<td align="right">100</td>
+<td align="right">62</td>
+<td align="right">52</td>
+<td align="right">48</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>write_xlsx(totalcells, path = &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/jan_metadata_totalcells.xlsx&quot;)</code></pre>
+</div>
+</div>
+<div id="differential-expression-and-marker-selection"
+class="section level2">
+<h2>Differential expression and marker selection</h2>
+<p>Differential expression allows us to define gene markers specific to
+each cluster. By definition it is influenced by how clusters are
+defined, so it’s important to find the correct resolution of your
+clustering before defining the markers. If some clusters lack any
+notable markers, adjust the clustering. It is recommended to do
+differential expression on the RNA assay, and not the SCTransform.
+Differential expression can be done between two specific clusters, as
+well as between a cluster and all other cells.</p>
+<p>The function FindAllMarkers() allows us to find markers for every
+cluster by comparing it to all remaining cells, while reporting either
+all or only the positive ones. By default, only positive markers are
+reported. There are many tests that can be used to define markers,
+including a very fast and intuitive tf-idf. By default, Wilcoxon Rank
+Sum test is used. This takes a while especially if you want to return
+all genes - expressed or not. The runs are much faster when we increase
+the minimal percentage and log2FC cutoffs (defaults: only.pos = T,
+min.pct = 0.5, logfc.threshold = 0.5).</p>
+<div id="finding-markers" class="section level3">
+<h3>Finding markers</h3>
+<p>First, the default mathod:</p>
+<pre class="r"><code># find markers for every cluster compared to all remaining cells, report only the positive ones; using RNA assay
+DefaultAssay(VT2) &lt;- &#39;RNA&#39;
+dcd45.markers &lt;- FindAllMarkers(VT2, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+dcd45.markers %&gt;%
+    group_by(cluster) %&gt;%
+    slice_max(n = 5, order_by = avg_log2FC)
+write_xlsx(dcd45.markers, path = &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/jan_rnaassay_25pfeature_marker.xlsx&quot;)</code></pre>
+<p>Then the more specific method:</p>
+<pre class="r"><code># find markers for every cluster compared to all remaining cells, report only the positive ones; using RNA assay
+DefaultAssay(VT2) &lt;- &#39;RNA&#39;
+dcd45.50markers &lt;- FindAllMarkers(VT2, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.25)
+dcd45.50markers %&gt;%
+    group_by(cluster) %&gt;%
+    slice_max(n = 5, order_by = avg_log2FC)
+write_xlsx(dcd45.50markers, path = &quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/jan_rnaassay_50pfeature_marker.xlsx&quot;)</code></pre>
+<p>Finally, the long method: Note the application of “min.pct = 0,
+logfc.threshold = 0, only.pos = F” as I want the function to return all
+expressed genes, both positive and negative as well. Depending on how
+large the dataset is, this run can take an entire day!</p>
+<pre class="r"><code>#No need to rerun this as it takes a while - run once and save files
+DefaultAssay(VT) &lt;- &#39;RNA&#39;
+cellsPerClust &lt;- as.data.frame(table(VT@active.ident))
+colnames(cellsPerClust) &lt;- c(&quot;Cluster&quot;, &quot;nCells&quot;)
+cellsPerClust
+        Cluster nCells
+1 SeuratProject   1962
+write.csv(cellsPerClust, file=&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/cellsPerClust.csv&quot;)</code></pre>
+<pre class="r"><code>#Overall number of cells 
+sum(cellsPerClust$nCells)
+
+(clusters &lt;- c(0, seq(1:9)))
+
+for(i in clusters){
+  cluster.markers &lt;- FindMarkers(VT2, ident.1 = i, min.pct = 0, logfc.threshold = 0, only.pos = F)
+  write.csv(cluster.markers, file=paste0(&quot;/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/&quot;, i, &quot;_Markers_RNA.csv&quot;))
+}</code></pre>
+</div>
+</div>
+<div id="overview-of-vt-scrna-seq-reanalysis-from-participant-d12"
+class="section level2">
+<h2>Overview of VT scRNA-seq reanalysis from Participant D12</h2>
+<p><strong>QC summary:</strong> - Counts were processed using the
+standard Seurat (v4.2.0) workflow</p>
+<pre><code>- Number of cells after filtering: 1962
+
+- RNA assay Normalized using: SCTransform
+
+- Filtering thresholds: nFeature_RNA &gt; 200 &amp; nFeature_RNA &lt; 4000 &amp; percent.mt &lt; 10
+
+- Dims: 1:30</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.2.2 (2022-10-31)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Big Sur ... 10.16
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] writexl_1.4.2               DropletUtils_1.18.1        
+ [3] SoupX_1.6.2                 interp_1.1-3               
+ [5] Hmisc_4.7-2                 Formula_1.2-4              
+ [7] survival_3.5-0              lattice_0.20-45            
+ [9] VennDiagram_1.7.3           futile.logger_1.4.3        
+[11] venn_1.11                   formatR_1.13               
+[13] splitstackshape_1.4.8       formattable_0.2.1          
+[15] usefun_0.4.8                MAST_1.24.0                
+[17] harmony_0.1.1               WebGestaltR_0.4.4          
+[19] monocle3_1.3.1              SingleCellExperiment_1.20.0
+[21] SummarizedExperiment_1.28.0 GenomicRanges_1.50.2       
+[23] GenomeInfoDb_1.34.6         IRanges_2.32.0             
+[25] S4Vectors_0.36.1            MatrixGenerics_1.10.0      
+[27] matrixStats_0.63.0          Biobase_2.58.0             
+[29] BiocGenerics_0.44.0         reticulate_1.27            
+[31] Matrix_1.5-3                cowplot_1.1.1              
+[33] gridExtra_2.3               magrittr_2.0.3             
+[35] forcats_0.5.2               stringr_1.5.0              
+[37] purrr_1.0.1                 readr_2.1.3                
+[39] tibble_3.1.8                tidyverse_1.3.2            
+[41] data.table_1.14.6           RColorBrewer_1.1-3         
+[43] Rfast2_0.1.3                Rcpp_1.0.9                 
+[45] ape_5.6-2                   hdf5r_1.3.7                
+[47] dplyr_1.0.10                SeuratWrappers_0.3.1       
+[49] knitr_1.41                  reshape2_1.4.4             
+[51] SeuratData_0.2.2            patchwork_1.1.2            
+[53] tidyr_1.2.1                 ggplot2_3.4.0              
+[55] SeuratObject_4.1.3          Seurat_4.3.0               
+[57] devtools_2.4.5              usethis_2.1.6              
+[59] workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] rsvd_1.0.5                ica_1.0-3                
+  [3] svglite_2.1.1             ps_1.7.2                 
+  [5] foreach_1.5.2             lmtest_0.9-40            
+  [7] rprojroot_2.0.3           crayon_1.5.2             
+  [9] MASS_7.3-58.1             rhdf5filters_1.10.0      
+ [11] nlme_3.1-161              backports_1.4.1          
+ [13] reprex_2.0.2              rlang_1.0.6              
+ [15] XVector_0.38.0            ROCR_1.0-11              
+ [17] readxl_1.4.1              irlba_2.3.5.1            
+ [19] nloptr_2.0.3              callr_3.7.3              
+ [21] limma_3.54.0              apcluster_1.4.10         
+ [23] BiocParallel_1.32.5       bit64_4.0.5              
+ [25] glue_1.6.2                rngtools_1.5.2           
+ [27] sctransform_0.3.5         vipor_0.4.5              
+ [29] parallel_4.2.2            processx_3.8.0           
+ [31] spatstat.sparse_3.0-0     spatstat.geom_3.0-3      
+ [33] haven_2.5.1               tidyselect_1.2.0         
+ [35] fitdistrplus_1.1-8        zoo_1.8-11               
+ [37] xtable_1.8-4              evaluate_0.19            
+ [39] scuttle_1.8.3             cli_3.6.0                
+ [41] zlibbioc_1.44.0           rstudioapi_0.14          
+ [43] doRNG_1.8.3               miniUI_0.1.1.1           
+ [45] sp_1.5-1                  whisker_0.4.1            
+ [47] bslib_0.4.2               rpart_4.1.19             
+ [49] lambda.r_1.2.4            shiny_1.7.4              
+ [51] xfun_0.36                 pkgbuild_1.4.0           
+ [53] cluster_2.1.4             ggrepel_0.9.2            
+ [55] listenv_0.9.0             png_0.1-8                
+ [57] future_1.30.0             withr_2.5.0              
+ [59] bitops_1.0-7              plyr_1.8.8               
+ [61] cellranger_1.1.0          RcppZiggurat_0.1.6       
+ [63] dqrng_0.3.0               pillar_1.8.1             
+ [65] cachem_1.0.6              fs_1.5.2                 
+ [67] DelayedMatrixStats_1.20.0 vctrs_0.5.1              
+ [69] ellipsis_0.3.2            generics_0.1.3           
+ [71] tools_4.2.2               foreign_0.8-84           
+ [73] beeswarm_0.4.0            munsell_0.5.0            
+ [75] DelayedArray_0.24.0       fastmap_1.1.0            
+ [77] compiler_4.2.2            pkgload_1.3.2            
+ [79] abind_1.4-5               httpuv_1.6.7             
+ [81] sessioninfo_1.2.2         plotly_4.10.1            
+ [83] GenomeInfoDbData_1.2.9    edgeR_3.40.1             
+ [85] deldir_1.0-6              utf8_1.2.2               
+ [87] later_1.3.0               jsonlite_1.8.4           
+ [89] scales_1.2.1              pbapply_1.6-0            
+ [91] sparseMatrixStats_1.10.0  lazyeval_0.2.2           
+ [93] promises_1.2.0.1          doParallel_1.0.17        
+ [95] latticeExtra_0.6-30       R.utils_2.12.2           
+ [97] goftest_1.2-3             spatstat.utils_3.0-1     
+ [99] checkmate_2.1.0           rmarkdown_2.19           
+[101] Rtsne_0.16                uwot_0.1.14              
+[103] igraph_1.3.5              HDF5Array_1.26.0         
+[105] yaml_2.3.6                systemfonts_1.0.4        
+[107] htmltools_0.5.4           memoise_2.0.1            
+[109] profvis_0.3.7             locfit_1.5-9.7           
+[111] viridisLite_0.4.1         digest_0.6.31            
+[113] assertthat_0.2.1          mime_0.12                
+[115] rappdirs_0.3.3            futile.options_1.0.1     
+[117] Rfast_2.0.6               future.apply_1.10.0      
+[119] remotes_2.4.2             urlchecker_1.0.1         
+[121] R.oo_1.25.0               labeling_0.4.2           
+[123] splines_4.2.2             Rhdf5lib_1.20.0          
+[125] googledrive_2.0.0         RCurl_1.98-1.9           
+[127] broom_1.0.2               hms_1.1.2                
+[129] modelr_0.1.10             rhdf5_2.42.0             
+[131] colorspace_2.0-3          base64enc_0.1-3          
+[133] BiocManager_1.30.19       ggbeeswarm_0.7.1         
+[135] ggrastr_1.0.1             nnet_7.3-18              
+[137] sass_0.4.4                RANN_2.6.1               
+[139] fansi_1.0.3               tzdb_0.3.0               
+[141] parallelly_1.33.0         R6_2.5.1                 
+[143] ggridges_0.5.4            lifecycle_1.0.3          
+[145] googlesheets4_1.0.1       minqa_1.2.5              
+[147] leiden_0.4.3              jquerylib_0.1.4          
+[149] RcppAnnoy_0.0.20          iterators_1.0.14         
+[151] spatstat.explore_3.0-5    htmlwidgets_1.6.1        
+[153] beachmat_2.14.0           polyclip_1.10-4          
+[155] timechange_0.1.1          terra_1.6-47             
+[157] rvest_1.0.3               globals_0.16.2           
+[159] htmlTable_2.4.1           spatstat.random_3.0-1    
+[161] progressr_0.13.0          codetools_0.2-18         
+[163] lubridate_1.9.0           getPass_0.2-2            
+[165] prettyunits_1.1.1         dbplyr_2.2.1             
+[167] R.methodsS3_1.8.2         gtable_0.3.1             
+[169] DBI_1.1.3                 git2r_0.30.1             
+[171] highr_0.10                tensor_1.5               
+[173] httr_1.4.4                KernSmooth_2.23-20       
+[175] stringi_1.7.8             farver_2.1.1             
+[177] xml2_1.3.3                admisc_0.30              
+[179] boot_1.3-28.1             lme4_1.1-31              
+[181] scattermore_0.8           bit_4.0.5                
+[183] jpeg_0.1-10               spatstat.data_3.0-0      
+[185] pkgconfig_2.0.3           gargle_1.2.1             </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
