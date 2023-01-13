@@ -1,7 +1,7 @@
-name: "VTsc"
+name: VTsc
 output_dir: ../docs
 navbar:
-  title: "Vento-Tormo scRNAseq Reanalysis"
+  title: Vento-Tormo scRNAseq Reanalysis
   left:
   - text: Home
     href: index.html
@@ -17,6 +17,10 @@ navbar:
     href: Jan_qc_VT224.html
   - text: VT881
     href: Jan_qc_VT881.html
+  right:
+  - icon: fab fa-github
+    text: Source code
+    href: https://github.com/meg3uab/VTsc
 output:
   workflowr::wflow_html:
     toc: yes
