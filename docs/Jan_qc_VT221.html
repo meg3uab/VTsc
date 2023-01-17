@@ -11,7 +11,7 @@
 
 <meta name="author" content="Morgan Greene" />
 
-<meta name="date" content="2023-01-13" />
+<meta name="date" content="2023-01-17" />
 
 <title>Jan_Vento-Tormo scRNAseq Reanalysis</title>
 
@@ -339,19 +339,28 @@ div.tocify {
   <a href="about.html">About</a>
 </li>
 <li>
-  <a href="Jan_qc_VT062.html">VT062</a>
+  <a href="Jan_qc_VT219.html">VT_D6.1</a>
 </li>
 <li>
-  <a href="Jan_qc_VT218.html">VT218</a>
+  <a href="Jan_qc_VT223.html">VT_D6.2</a>
 </li>
 <li>
-  <a href="Jan_qc_VT221.html">VT221</a>
+  <a href="Jan_Integration_219_223.html">VT_D6Combo</a>
 </li>
 <li>
-  <a href="Jan_qc_VT224.html">VT224</a>
+  <a href="Jan_qc_VT221.html">VT_D7</a>
 </li>
 <li>
-  <a href="Jan_qc_VT881.html">VT881</a>
+  <a href="Jan_qc_VT218.html">VT_D8</a>
+</li>
+<li>
+  <a href="Jan_qc_VT224.html">VT_D9</a>
+</li>
+<li>
+  <a href="Jan_qc_VT062.html">VT_D10</a>
+</li>
+<li>
+  <a href="Jan_qc_VT881.html">VT_D12</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -373,7 +382,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Jan_Vento-Tormo scRNAseq Reanalysis</h1>
 <h4 class="author">Morgan Greene</h4>
-<h4 class="date">2023-01-13</h4>
+<h4 class="date">2023-01-17</h4>
 
 </div>
 
@@ -402,7 +411,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-01-13
+<strong>Last updated:</strong> 2023-01-17
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -533,15 +542,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommeg3uabVTsctree71e1b46d8ee8c10fcb9330792d03b0c81951d4f7targetblank71e1b46a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommeg3uabVTsctreef55aa188cb3074ec39457acab628a4150c4c9637targetblankf55aa18a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/meg3uab/VTsc/tree/71e1b46d8ee8c10fcb9330792d03b0c81951d4f7" target="_blank">71e1b46</a>
+<a href="https://github.com/meg3uab/VTsc/tree/f55aa188cb3074ec39457acab628a4150c4c9637" target="_blank">f55aa18</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcommeg3uabVTsctree71e1b46d8ee8c10fcb9330792d03b0c81951d4f7targetblank71e1b46a"
+id="strongRepositoryversionstrongahrefhttpsgithubcommeg3uabVTsctreef55aa188cb3074ec39457acab628a4150c4c9637targetblankf55aa18a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -551,7 +560,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/meg3uab/VTsc/tree/71e1b46d8ee8c10fcb9330792d03b0c81951d4f7" target="_blank">71e1b46</a>.
+<a href="https://github.com/meg3uab/VTsc/tree/f55aa188cb3074ec39457acab628a4150c4c9637" target="_blank">f55aa18</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -567,6 +576,7 @@ were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
+    Ignored:    .Rhistory
     Ignored:    .Rproj.user/
 
 Untracked files:
@@ -616,6 +626,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/meg3uab/VTsc/f7a9182bb611622c2a83f0f7e2f6ac4416a410ef/docs/Jan_qc_VT221.html" target="_blank">f7a9182</a>
+</td>
+<td>
+meg3uab
+</td>
+<td>
+2023-01-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1396,20 +1423,20 @@ VT_Control_2 &lt;- RunUMAP(VT_Control_2, dims = 1:20, verbose = TRUE, reduction 
 Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
 To use Python UMAP via reticulate, set umap.method to &#39;umap-learn&#39; and metric to &#39;correlation&#39;
 This message will be shown once per session
-16:08:41 UMAP embedding parameters a = 0.9922 b = 1.112
-16:08:41 Read 658 rows and found 20 numeric columns
-16:08:41 Using Annoy for neighbor search, n_neighbors = 30
-16:08:41 Building Annoy index with metric = cosine, n_trees = 50
+11:53:39 UMAP embedding parameters a = 0.9922 b = 1.112
+11:53:39 Read 658 rows and found 20 numeric columns
+11:53:39 Using Annoy for neighbor search, n_neighbors = 30
+11:53:39 Building Annoy index with metric = cosine, n_trees = 50
 0%   10   20   30   40   50   60   70   80   90   100%
 [----|----|----|----|----|----|----|----|----|----|
 **************************************************|
-16:08:41 Writing NN index file to temp file /var/folders/0d/g9q0mtm13sbg08c7pryg5gk40000gn/T//Rtmpu9UfaH/file3a2c645d13c0
-16:08:41 Searching Annoy index using 1 thread, search_k = 3000
-16:08:41 Annoy recall = 100%
-16:08:42 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
-16:08:43 Initializing from normalized Laplacian + noise (using irlba)
-16:08:43 Commencing optimization for 500 epochs, with 24834 positive edges
-16:08:44 Optimization finished
+11:53:39 Writing NN index file to temp file /var/folders/0d/g9q0mtm13sbg08c7pryg5gk40000gn/T//RtmpWc1tjV/file7b2cbaeb371
+11:53:39 Searching Annoy index using 1 thread, search_k = 3000
+11:53:39 Annoy recall = 100%
+11:53:39 Commencing smooth kNN distance calibration using 1 thread with target n_neighbors = 30
+11:53:40 Initializing from normalized Laplacian + noise (using irlba)
+11:53:41 Commencing optimization for 500 epochs, with 24834 positive edges
+11:53:42 Optimization finished
 VT_Control_2 &lt;- FindClusters(VT_Control_2, verbose = TRUE, reduction = &quot;pca&quot;) #Resolution can be adjusted - leaving to default for now in test dataset
 Warning: The following arguments are not used: reduction
 Warning: The following arguments are not used: reduction
