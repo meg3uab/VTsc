@@ -1,0 +1,198 @@
+---
+title: "Seurat Integration"
+author: "MG"
+date: '2023-1-17'
+output: html_document
+---
+# Seurat Integration Workflow
+
+## 1. Load Packages
+```{r setup, include=FALSE, warning=FALSE}
+library(RColorBrewer)
+library(sctransform)
+library(ggplot2)
+library(dplyr)
+library(Seurat)
+library(tidyseurat)
+library(patchwork)
+library(magrittr)
+library(data.table)
+library(harmony)
+library(cowplot)
+library(writexl)
+```
+
+## 2. Load Seurat Objects
+
+###### These are the Vento-Tormo CD45+ decidual cells; data was downloaded and each sample was taken through the "Seurat - Guided Clustering Tutorial" then saved as an object
+
+```{r}
+vt219 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/vt219qc.rds")
+vt223 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt223_outs/finalqc/vt223qc.rds")
+```
+
+## 3. Performing integration on datasets that were normalized with SCTransform:
+
+-Datasets were normalized with sctransform prior to integration. readRDS was used to bring in these datasets
+
+-Each dataset includes cells with 500 or greater detected genes
+
+-Run the PrepSCTIntegration() function prior to identifying anchors
+
+-When running FindIntegrationAnchors(), and IntegrateData(), set the normalization.method parameter to the value SCT.
+
+-When running sctransform-based workflows, including integration, do not run the ScaleData() function
+
+### Select integration features and prep step
+
+```{r}
+features <- SelectIntegrationFeatures(object.list = list(vt219, vt223), nfeatures = 3000)
+vtagg <- PrepSCTIntegration(object.list = list(vt219, vt223), anchor.features = features)
+```
+
+### Find immune anchors
+
+```{r}
+immune.anchors <- FindIntegrationAnchors(object.list = vtagg, normalization.method = "SCT",
+    anchor.features = features)
+```
+
+### Save the immune anchors object!
+
+```{r}
+#Save wherever you'd like
+saveRDS(immune.anchors, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_219+223anchors.rds")
+```
+
+### Combine the data
+
+```{r}
+immune.combined.sct <- IntegrateData(anchorset = immune.anchors, normalization.method = "SCT")
+```
+
+### Save the combined object!
+
+```{r}
+#Save wherever you'd like
+saveRDS(immune.combined.sct, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_219+223_combined_sct.rds")
+```
+
+## 4. Visualize immune.combined.sct
+
+```{r}
+immune.combined.sct[[]]
+```
+
+## 5. Perform an integrated analysis
+
+```{r}
+pcaimmune.combined.sct <- RunPCA(immune.combined.sct, verbose = FALSE)
+umapimmune.combined.sct <- RunUMAP(pcaimmune.combined.sct, reduction = "pca", dims = 1:30)
+```
+
+```{r}
+neighbor <- FindNeighbors(umapimmune.combined.sct, reduction = "pca", dims = 1:30)
+neighbor <- FindClusters(neighbor, resolution = 0.5)
+```
+
+## 6. Save the final object!
+
+```{r}
+#Save wherever you'd like
+saveRDS(neighbor, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_clustered_immune.combined.sct.rds")
+```
+
+## Loading the final clustered object from cheaha so that I can visualize it.
+
+```{r}
+neighbor <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_clustered_immune.combined.sct.rds")
+```
+
+## 7. UMAP
+```{r}
+vtfeatureintegrated_cd45pp <- DimPlot(neighbor, reduction = "umap", label = TRUE)
+vtfeatureintegrated_cd45pp
+```
+
+### 7.1 Extract meta data
+
+```{r}
+## extract meta data
+md <- neighbor@meta.data %>% as.data.table
+knitr::kable(md, caption = "Integrated Meta Data")
+write_xlsx(md, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/sctfeatures_metadata.xlsx")
+```
+### 7.2 Determine Cell Number
+
+```{r}
+# How many cells are in each cluster
+# Get cell identity classes
+## count the number of cells per unique combinations of "Sample" and "seurat_clusters"
+## with additional casting after the counting
+totalcells <- md[, .N, by = c( "orig.ident", "seurat_clusters")] %>% dcast(., orig.ident ~ seurat_clusters, value.var = "N")
+knitr::kable(totalcells, caption = "Total Cells per Cluster")
+write_xlsx(totalcells, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/sctfeatures_totalcells.xlsx")
+```
+
+### 7.3 Title UMAP
+
+```{r}
+finalUMAP <- vtfeatureintegrated_cd45pp + labs(title = "Clustering of Individual D6 scRNA")
+```
+
+## 8. Determine Cluster Differences
+
+```{r}
+# find markers for every cluster compared to all remaining cells, report only the positive ones
+DefaultAssay(neighbor) <- 'RNA'
+dcd45.markers <- FindAllMarkers(neighbor, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+
+write_xlsx(dcd45.markers, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6VTcleanmarker.xlsx")
+```
+
+### 8.1 Determine Specific Cluster Differences
+
+```{r}
+# find markers for every cluster compared to all remaining cells, report only the positive ones
+# set minimum percent threshold at 50%
+DefaultAssay(neighbor) <- 'RNA'
+dcd45.markers.50pct <- FindAllMarkers(neighbor, only.pos = TRUE, min.pct = 0.50, logfc.threshold = 0.25)
+write_xlsx(dcd45.markers.50pct, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6VT50pct_marker.xlsx")
+```
+
+
+```{r, collapse=TRUE}
+#No need to rerun this as it takes a while - run once and save files
+DefaultAssay(neighbor) <- 'RNA'
+cellsPerClust <- as.data.frame(table(neighbor@active.ident))
+colnames(cellsPerClust) <- c("Cluster", "nCells")
+cellsPerClust
+write.csv(cellsPerClust, file="/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/inteD6finalqc.csv")
+
+#Overall number of cells 
+sum(cellsPerClust$nCells)
+
+```
+
+```{r, eval=FALSE}
+(clusters <- c(0, seq(1:12)))
+
+for(i in clusters){
+  cluster.markers <- FindMarkers(neighbor, ident.1 = i, min.pct = 0, logfc.threshold = 0, only.pos = F)
+  write.csv(cluster.markers, file=paste0("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/", i, "_Markers_RNA.csv"))
+}
+```
+
+# Overview of VT scRNA-seq reanalysis from Participant D6 
+
+**QC summary:** - Counts were processed using the standard Seurat (v4.2.0) workflow
+
+    - Number of cells after filtering: 6326
+
+    - RNA assay Normalized using: SCTransform
+
+    - Filtering thresholds: nFeature_RNA > 200 & nFeature_RNA < 4000 & percent.mt < 10
+
+    - Dims: 1:30
+    
+    

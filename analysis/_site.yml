@@ -7,15 +7,21 @@ navbar:
     href: index.html
   - text: About
     href: about.html
-  - text: VT062
-    href: Jan_qc_VT062.html
-  - text: VT218
-    href: Jan_qc_VT218.html
-  - text: VT221
+  - text: VT_D6.1
+    href: Jan_qc_VT219.html
+  - text: VT_D6.2
+    href: Jan_qc_VT223.html
+  - text: VT_D6Combo
+    href: Jan_Integration_219_223.html
+  - text: VT_D7
     href: Jan_qc_VT221.html
-  - text: VT224
+  - text: VT_D8
+    href: Jan_qc_VT218.html
+  - text: VT_D9
     href: Jan_qc_VT224.html
-  - text: VT881
+  - text: VT_D10
+    href: Jan_qc_VT062.html
+  - text: VT_D12
     href: Jan_qc_VT881.html
   right:
   - icon: fab fa-github

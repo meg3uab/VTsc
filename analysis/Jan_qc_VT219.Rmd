@@ -1,0 +1,666 @@
+---
+title: "Jan_Vento-Tormo scRNAseq Reanalysis"
+author: "Morgan Greene"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    self_contained: true
+    thumbnails: false
+    lightbox: true
+    downcute_theme: "chaos"
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: sentence
+---
+
+## Reanalysis of individual D6pt1 scRNAseq
+
+#### Information is the following:
+
+    - Run Name: FCA7167219
+    - Organism part: Decidua
+    - FACS marker: CD45+
+    - Clinical information: 6-12 wks gestation
+
+##### For the individual D6, cells were sorted by CD45 expression and in total, 2957 decidual cells (CD45+ and CD45-) were analyzed via 10x-genomics. *The authors do not state how many of each were sorted.*
+
+## Downstream Analysis
+
+### Load Required Packages
+
+```{r, warning=FALSE, message=FALSE}
+suppressPackageStartupMessages({
+# Package names
+packages <- c("devtools", "Seurat", "ggplot2", "tidyr", "patchwork", "SeuratData", "reshape2", "knitr", "SeuratWrappers", "dplyr", "hdf5r", "ape", "Rfast2", "RColorBrewer", "data.table", "tidyverse", "magrittr", "gridExtra", "cowplot", "Matrix", "reticulate", "monocle3", "WebGestaltR", "harmony", "MAST", "purrr", "usefun", "formattable", "splitstackshape", "formatR", "venn", "VennDiagram", "Hmisc", "interp", "SoupX", "DropletUtils", "writexl")
+# Install packages not yet installed
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+})
+```
+
+We'll start by assessing and removing ambient RNA in our dataset before proceeding with further downstream QC and analyses
+
+### [Remove ambient RNA using SoupX](https://academic.oup.com/gigascience/article/9/12/giaa151/6049831)
+
+Dropseq scRNAseq assumes all acquired RNAs are endogenous to cells.
+However, any RNAs contained in the input droplet are also captured by these assays.
+Sequencing of cell free RNA creates background contamination that can confound the correct biological interpretation of sc transcriptomic data.
+Contamination from this "soup" of cell free RNAs is ubiquitous, experiment specific (in composition and magnitude), and can lead to erroneous biological conclusions.
+[**SoupX**](https://www.rdocumentation.org/packages/SoupX/versions/1.6.2) is a method used for quantifying the extent of the contamination and estimating "background corrected", cell expression profiles that can be integrated with existing downstream analysis tools.
+soupX reduces batch effects, strengthens cell-specific quality control and improves biological interpretation
+
+The method to do this consists of three parts: 
+
+  1.Calculate the profile of the soup.
+
+  2.Estimate the cell specific contamination fraction.
+
+  3.Infer a corrected expression matrix.
+
+Various approaches of estimating and removing soup contamination: <https://cran.r-project.org/web/packages/SoupX/readme/README.html> <https://rawcdn.githack.com/constantAmateur/SoupX/204b602418df12e9fdb4b68775a8b486c6504fe4/inst/doc/pbmcTutorial.html>
+
+We use the **automatic method** to estimate the contamination fraction and decontaminate data.
+
+Leverages clustering information from cellranger.
+
+```{r, eval=FALSE}
+sc1 = load10X("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs")
+sc1 = autoEstCont(sc1)
+out1 = adjustCounts(sc1)
+DropletUtils:::write10xCounts("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/vt219_soupX_filtered", out1) #we shall use results from this run
+```
+
+### Load soupX_Filtered Data
+
+Load in **soupX_Filtered** data and filter the **filtered_feature_bc_matrix** data object based on the soupX corrected data.
+
+*Note that the RNA assay in filtered_feature_bc_matrix should be the same as that in the soupX_Filtered object.*
+
+```{r, collapse=TRUE}
+#Loading soupX filtered data
+soupX_Filtered <- Read10X(data.dir = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/vt219_soupX_filtered")
+str(soupX_Filtered)
+
+dim(soupX_Filtered)
+
+dataDir <- '/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/filtered_feature_bc_matrix'
+data <- Read10X(data.dir = dataDir)
+str(data)
+
+dim(data)
+
+```
+Dim result shows 2 numbers: features/genes & cells
+
+We have same dims but soupX filtered is corrected, so counts may be different
+
+Next, check that all cells and genes are in both datasets and in the same order
+
+```{r}
+soupX_fg <- as.data.frame(rownames(soupX_Filtered)) 
+#all genes (row names) from filtered gene expression soupx, note that this object only has the RNA assay
+soupX_Filtered_cells <- as.data.frame(colnames(soupX_Filtered)) 
+#all cells (col names) from filtered gene expression soupx 
+
+data_genes <- as.data.frame(rownames(data)) 
+#GEX (cellranger output)
+data_cells <- as.data.frame(colnames(data)) 
+#GEX (cellranger output)
+```
+
+True or False: All soupX filtered genes/cells are in original output
+```{r, collapse=TRUE}
+
+all(soupX_fg %in% data_genes)
+
+all(data_genes %in% soupX_fg) 
+
+all.equal(soupX_fg$`rownames(soupX_Filtered)`, data_genes$`rownames(data)`)
+
+all(data_cells %in% soupX_Filtered_cells)
+
+all(soupX_Filtered_cells %in% data_cells) 
+
+all.equal(soupX_Filtered_cells$`colnames(soupX_Filtered)`, data_cells$`colnames(data)`)
+
+all.equal(data, soupX_Filtered)
+
+#Because the genes and cells are the same, we will use the corrected soupX object instead of GEX assay,
+mean(data)
+
+mean(soupX_Filtered) 
+
+mean(rowMeans(soupX_Filtered))
+
+#Replacing data RNA assay with the soupX_Filtered data
+data <- soupX_Filtered
+mean(data) #data mean should now equal soupX_Filtered mean
+```
+
+### Create a Seurat object for analysis
+
+```{r, collapse=TRUE}
+vt219_jan <- CreateSeuratObject(counts = data, min.cells = 3, min.features = 200)
+Assays(vt219_jan)
+
+class(vt219_jan)
+
+saveRDS(vt219_jan, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/vt219_soupX_filtered/vt219_jan_SeuratObj.rds")
+```
+
+### Perform pre-processing and dimensional reduction.
+
+**Single-cell gene expression:** scRNA-seq data is analysed using standard pipelines in Seurat which include normalization, feature selection, and dimensional reduction with PCA.
+
+#### Quality Control (QC)
+
+```{r, collapse=TRUE, fig.height=4}
+VT <- vt219_jan
+
+#Specify which assay we are working with like so:
+DefaultAssay(VT) <- 'RNA' 
+#Check if correct. Should be RNA
+DefaultAssay(VT) 
+
+#View Metadata
+head(VT@meta.data)
+
+#We'll store the percentage of reads that map to the mitochondrial genome in the metadata object as "percent.mt"
+VT <- PercentageFeatureSet(VT, pattern = "^MT-", col.name = "percent.mt")
+head(VT@meta.data)
+
+p1 <- VlnPlot(VT, features = c("nFeature_RNA"), ncol = 1) + theme_light(base_size = 14) + theme(legend.position = "none", plot.title = element_text(size = 14, face = "bold", hjust = 0.5))
+p2 <- VlnPlot(VT, features = c("nCount_RNA"), ncol = 1) + theme_light(base_size = 14) + theme(legend.position = "none", plot.title = element_text(size = 14, face = "bold", hjust = 0.5))
+p3 <- VlnPlot(VT, features = c("percent.mt"), ncol = 1) + theme_light(base_size = 14) + theme(legend.position = "none", plot.title = element_text(size = 14, face = "bold", hjust = 0.5))
+
+grid.arrange(p1, p2, p3, ncol=3)
+```
+
+Feature Scatter Plots: nFeature_RNA is the number of genes detected in each cell. nCount_RNA is the total number of molecules detected within a cell. The number above each plot denotes the correlations between x-axis and y-axis.
+```{r, message=FALSE, fig.width=20, fig.height=7}
+plot1 <- FeatureScatter(VT, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(VT, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+plot1 + plot2
+```
+
+Violin Plot of the data and distributions
+```{r, echo=FALSE, warning=FALSE, fig.height=3}
+df <- as.data.table(VT@meta.data)
+sel <- c("orig.ident", "nCount_RNA", "nFeature_RNA", "percent.mt")
+df <- df[, sel, with = FALSE]
+df[1:3, ]
+fontsize <- 10
+linesize <- 0.35
+
+gp.ls <- df[, 2:4] %>% imap( ~ {
+  
+   # define lable function
+  give.n <- function(x) {
+    return(c(y = median(x) + max(x) / 10, label = round(median(x), 2)))
+  }
+  
+  # assign colors
+  col.ls <-
+    setNames(
+      c('gray50', 'gray70', 'gray90', "gray" ),
+      c("nCount_RNA", "nFeature_RNA", "percent.mt", "log10GenesPerUMI")
+    )
+  
+  ggplot(data = df, aes(x = orig.ident, y = .x)) +
+    geom_violin(trim = FALSE, fill = col.ls[.y]) +
+    ggtitle(label = .y) + ylab(label = .y) +
+    theme_bw() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      panel.border = element_blank()
+    ) +
+    theme(
+      axis.text = element_text(size = fontsize),
+      axis.line = element_line(colour = "black", size = linesize),
+      axis.ticks = element_line(size = linesize),
+      axis.title.x = element_blank(),
+      axis.ticks.length = unit(.05, "cm"),
+      plot.title = element_text(size = fontsize + 2, hjust = 0.5),
+      legend.position = 'none'
+    ) +
+    stat_summary(fun = median, geom = "point", col = "black") +  # Add points to plot
+    stat_summary(fun.data = give.n,
+                 geom = "text",
+                 col = "black") + theme_light()
+})
+
+grid.arrange(gp.ls[[1]], gp.ls[[2]], gp.ls[[3]], ncol = 3)
+```
+
+#### Editing Metadata
+
+```{r, collapse=TRUE, fig.height=4, fig.width=2}
+metadata <- VT@meta.data
+
+# Add cell IDs to metadata
+metadata$cells <- rownames(metadata)
+
+# Rename columns
+metadata <- metadata %>%
+        dplyr::rename(nUMI = nCount_RNA,
+                      nGene = nFeature_RNA)
+
+unique(metadata$orig.ident)
+
+# Visualize the number of cells
+metadata %>% 
+  ggplot(aes(x=orig.ident, fill=orig.ident)) + 
+  geom_bar(color = "gray80", fill = "gray80") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  theme(plot.title = element_text(hjust=0.5, face="bold")) +
+  ggtitle("NCells") + theme(legend.position = "none") + 
+  theme(legend.position = "none") + 
+  geom_text(stat='count', aes(label=..count..), vjust = 0.5)
+```
+
+#### Number UMIs/molecules per cell
+
+```{r, fig.width=4, fig.height=3}
+#Visualize the number UMIs/molecules per cell
+metadata  %>% 
+  	ggplot(aes(color=orig.ident, x=nUMI, fill= orig.ident)) + 
+  	geom_density(alpha = 0.3, color="gray70", fill="gray70") + 
+  	scale_x_log10() + 
+  	theme_classic() +
+  	ylab("Cell density/UMI counts per cell") +
+  	geom_vline(xintercept = 500) + theme(legend.position = "none")
+#The UMI counts per cell should generally be above 500, that is the low end of what we expect. If UMI counts are between 500-1000 counts, it is usable but the cells probably should have been sequenced more deeply
+```
+
+#### More QC
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=6}
+counts <- Matrix(VT@assays$RNA@counts)
+counts_per_cell <- Matrix::colSums(counts)
+counts_per_gene <- Matrix::rowSums(counts)
+genes_per_cell <- Matrix::colSums(counts>0) #count a gene only if it has non-zero reads mapped.
+cells_per_gene <- Matrix::rowSums(counts>0) #only count cells where the gene is expressed
+
+counts_per_cell <- as.data.frame(colSums(counts))
+counts_per_gene <- as.data.frame(rowSums(counts))
+genes_per_cell <- as.data.frame(colSums(counts>0)) 
+cells_per_gene <- as.data.frame(rowSums(counts>0) )
+
+colnames(counts_per_cell) <- "counts"
+colnames(counts_per_gene) <- "counts"
+colnames(genes_per_cell) <- "genes_per_cell"
+colnames(cells_per_gene) <- "cells_per_gene"
+
+df <- cbind(counts_per_cell, genes_per_cell)
+
+ggplot(df, aes(x=counts, y=genes_per_cell)) + geom_point(color="gray30") + scale_y_continuous(trans='log10') + scale_x_continuous(trans='log10') + theme_light()
+
+#Plot cells ranked by their number of detected genes.
+genes_per_cell$cells <- rownames(genes_per_cell)
+
+#set upper and lower thresholds for genes per cell - the upper and lower limit curve bends give a good clue on what thresholds to set:
+min_genes_per_cell <- 200  
+max_genes_per_cell <- 4000 
+
+ggplot(genes_per_cell, aes(x=reorder(genes_per_cell, cells), y=genes_per_cell)) + geom_point() + 
+  scale_y_continuous(trans='log10', breaks=seq(0, 5000, by = 1000)) + ggtitle("Genes per Cell") + theme_test(base_size = 12) + 
+  geom_hline(aes(yintercept=min_genes_per_cell),
+             color="blue", linetype="dashed", size=0.5) + 
+  geom_hline(aes(yintercept=max_genes_per_cell), color="blue", linetype="dashed", size=0.5) + labs(x= "Cells", y="Number of Genes") + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), plot.title = element_text(size = 14, face = "bold", hjust = 0.5)) 
+```
+
+#### Percent MT Distribution
+
+```{r fig.width=12, fig.height=6}
+#Density plot
+ggplot(VT@meta.data, aes(x=VT@meta.data$percent.mt)) +
+  geom_density() + scale_color_manual(values=c("blue")) + theme_classic() +
+geom_vline(aes(xintercept=mean(VT@meta.data$percent.mt)),
+            color="blue", linetype="dashed", size=0.5) +scale_x_continuous(breaks=seq(0, 100, by = 5))
+```
+
+##### Data filtering: calculate value in the 93rd percentile for a hint on thresholds
+
+```{r, collapse=TRUE}
+(Count93_nCount_RNA <- quantile(VT@meta.data$nCount_RNA, 0.93))
+
+(Count93_nFeature_RNA <- quantile(VT@meta.data$nFeature_RNA, 0.93))
+
+(Count93_percent_mt <-  quantile(VT@meta.data$percent.mt, 0.93))
+
+summary(VT@meta.data$nCount_RNA)
+
+summary(VT@meta.data$nFeature_RNA)
+
+```
+
+### Set thresholds for Seurat object
+
+```{r}
+VT <- subset(VT, subset = nFeature_RNA > 200 & nFeature_RNA < 4000 & percent.mt < 10)
+
+saveRDS(VT, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/vt219_soupX_filtered/PREscrublet_vt219.rds")
+```
+
+## Doublet Removal
+
+Detection of doublets was conducting in python using [scrublet](https://github.com/swolock/scrublet) and a file containing scrublet calls/predictions was written out.
+This file was then loaded into R to use as a basis for filtering out doublets.
+
+Visualization of the doublet predictions in a 2-D embedding/UAMP.
+Predicted doublets should mostly co-localize (possibly in multiple clusters).
+If they do not, you may need to adjust the doublet score threshold, or change the pre-processing parameters to better resolve the cell states present in your data.
+
+```{r, echo=FALSE, out.width = '70%'}
+include_graphics('/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/scrublet_imgs/vt219_cell_16_output_1.png', auto_pdf = getOption("knitr.graphics.auto_pdf", FALSE),
+                 error = getOption("knitr.graphics.error", TRUE), dpi = 300)
+```
+
+The simulated doublet histogram below should typically be bimodal.
+The left mode corresponds to "embedded" doublets generated by two cells with similar gene expression.
+The right mode corresponds to "neotypic" doublets, which are generated by cells with distinct gene expression (e.g., different cell types) and are expected to introduce more artifacts in downstream analyses.
+
+Scrublet can only detect neotypic doublets.
+This histogram is an important diagnostic plot.
+Doublet score threshold should separate the two shoulders of the bimodal distribution as shown below:
+
+```{r, echo=FALSE, out.width = '70%'}
+include_graphics('/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/scrublet_imgs/vt219_cell_14_output_2.png', auto_pdf = getOption("knitr.graphics.auto_pdf", FALSE),
+                 error = getOption("knitr.graphics.error", TRUE), dpi = 300)
+```
+
+### Load in scrublet predictions
+
+```{r, collapse=TRUE}
+dim(scrublet_calls <- read.csv("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/vt219_soupX_filtered/scrublet_calls.csv")) 
+
+table(scrublet_calls$predicted_doublets) 
+#Doublets = True
+
+dim(scrublet_calls <- scrublet_calls[which(scrublet_calls$X %in% rownames(VT@meta.data)),])
+
+rownames(scrublet_calls) <- scrublet_calls$X
+scrublet_calls$X <-NULL
+dim(scrublet_calls)
+
+#Adding doublet info to metadata
+#First we'll ensure that the rownames in VT match the rownames in scrublet_calls. AddMetaData maps rownames but we'll still do so to ensure that mapping of predictions are made to respective barcodes
+scrublet_calls <- scrublet_calls[rownames(VT@meta.data), ]
+head(rownames(scrublet_calls))
+
+head(rownames(VT@meta.data))
+
+all(rownames(scrublet_calls) %in% rownames(VT@meta.data))
+```
+
+```{r}
+VT <- AddMetaData(VT, scrublet_calls)
+```
+
+### Pre-Normalized Visualization
+
+```{r, collapse=TRUE, fig.height=4, fig.width=5}
+#Without normalizing the data, we want to first visualize the doublets in our datasets
+VT_Control_2 <- VT
+VT_Control_2 <- FindVariableFeatures(VT_Control_2, selection.method = "vst", nfeatures = 2500)
+VT_Control_2 <- ScaleData(object = VT_Control_2, scale.max = 30,  verbose = FALSE)
+VT_Control_2 <- RunPCA(object = VT_Control_2, npcs = 30, verbose = FALSE)
+VT_Control_2 <- FindNeighbors(VT_Control_2, dims = 1:20, verbose = TRUE, reduction = "pca")
+VT_Control_2 <- RunUMAP(VT_Control_2, dims = 1:20, verbose = TRUE, reduction = "pca")
+VT_Control_2 <- FindClusters(VT_Control_2, verbose = TRUE, reduction = "pca") #Resolution can be adjusted - leaving to default for now in test dataset
+
+FeaturePlot(VT_Control_2, features = "doublet_scores", pt.size = 0.01)
+
+DimPlot(VT_Control_2, group.by = "predicted_doublets", pt.size = 0.01, cols = c("gray90", "firebrick3"))
+
+#Checking the nUMI for doublets and singlets
+VlnPlot(VT_Control_2,
+        features = "nCount_RNA",
+        pt.size = 0,
+        group.by = "predicted_doublets") + NoLegend()
+
+#Fractions of doublets per cluster
+df <- data.table(VT_Control_2@meta.data)
+
+perc <- as.data.frame(df %>%
+                        group_by(seurat_clusters, predicted_doublets) %>%
+                        dplyr::summarise(cnt = n()) %>%
+                        mutate(freq = formattable::percent(cnt / sum(cnt), digits = 5)))
+
+perc$predicted_doublets <- as.character(perc$predicted_doublets)
+perc$predicted_doublets[perc$predicted_doublets == "True"] <- "Doublet"
+perc$predicted_doublets[perc$predicted_doublets == "False"] <- "Singlet"
+
+perc %>% 
+  ggplot() +
+  geom_bar(aes(x = seurat_clusters, y=freq,
+               group = predicted_doublets,
+               fill = predicted_doublets),
+           stat = "identity", width = 0.99, alpha = 0.8) +
+  theme_test()+ 
+  labs(y=paste0("% Distribution of doublets and singlets per cluster"), x="") +
+  scale_fill_manual(values = c("Doublet" = 'red3', "Singlet" = "gray80")) +
+  theme(legend.position = "right") +scale_y_continuous(expand = c(0,0))
+
+#Next we'll remove the doublets and see what the data looks like
+VT_Control_2 <- VT_Control_2[, VT_Control_2@meta.data[, "predicted_doublets"] == "False"]
+unique(VT_Control_2@meta.data$predicted_doublets)
+DimPlot(VT_Control_2, group.by = "predicted_doublets", pt.size = 0.01, cols = c("gray90", "firebrick3"), label = TRUE)
+```
+
+```{r, fig.height=8}
+VlnPlot(VT_Control_2, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 1, pt.size = 0.1)
+```
+
+## Data Normalization
+
+After removing unwanted cells from the dataset, the next step is to normalize the data.
+Apply SCTransform (Hafemeister and Satija, 2019) to normalize gene expression data.
+<https://www.sciencedirect.com/science/article/pii/S0092867421005833>
+
+```{r}
+VT <- VT[, VT@meta.data[, "predicted_doublets"] == "False"]
+unique(VT@meta.data$predicted_doublets)
+# Noramlizing the data using SCTransform, here I am also removing mitochondrial mapping percentage which is a confounding source of variation
+#Note that the single command SCTransform() replaces NormalizeData(), ScaleData(), and FindVariableFeatures().
+#https://satijalab.org/seurat/articles/sctransform_vignette.html
+DefaultAssay(VT) <- 'RNA'
+VT <- SCTransform(VT, vars.to.regress = "percent.mt", verbose = FALSE) %>% RunPCA()
+```
+
+### Data after filtering and normalization
+
+```{r, fig.height=3.5}
+VlnPlot(VT, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+```
+
+```{r, echo=FALSE, fig.height=3}
+df <- as.data.table(VT@meta.data)
+sel <- c("orig.ident", "nCount_RNA", "nFeature_RNA", "percent.mt")
+df <- df[, sel, with = FALSE]
+df[1:3, ]
+fontsize <- 10
+linesize <- 0.35
+
+gp.ls <- df[, 2:4] %>% imap( ~ {
+  
+   # define lable fun
+  give.n <- function(x) {
+    return(c(y = median(x) + max(x) / 10, label = round(median(x), 2)))
+  }
+  
+  # assign colors
+  col.ls <-
+    setNames(
+      c('gray50', 'gray70', 'gray90', "gray" ),
+      c("nCount_RNA", "nFeature_RNA", "percent.mt", "log10GenesPerUMI")
+    )
+  
+  ggplot(data = df, aes(x = orig.ident, y = .x)) +
+    geom_violin(trim = FALSE, fill = col.ls[.y]) +
+    ggtitle(label = .y) + ylab(label = .y) +
+    theme_bw() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      panel.border = element_blank()
+    ) +
+    theme(
+      axis.text = element_text(size = fontsize),
+      axis.line = element_line(colour = "black", size = linesize),
+      axis.ticks = element_line(size = linesize),
+      axis.title.x = element_blank(),
+      axis.ticks.length = unit(.05, "cm"),
+      plot.title = element_text(size = fontsize + 2, hjust = 0.5),
+      legend.position = 'none'
+    ) +
+    stat_summary(fun = median, geom = "point", col = "black") +  # Add points to plot
+    stat_summary(fun.data = give.n,
+                 geom = "text",
+                 col = "black") + theme_light()
+})
+
+grid.arrange(gp.ls[[1]], gp.ls[[2]], gp.ls[[3]], ncol = 3)
+```
+
+Save the object!
+Before finishing up, let's save this object to the data/ folder.
+
+```{r}
+#Edit so it's saved to your folder
+saveRDS(VT, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/vt219qc.rds")
+```
+
+```{r}
+# Load the seurat object into the environment
+#VT <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/vt219qc.rds")
+```
+
+We can now use these results for downstream analysis, such as visualization and clustering.
+
+## Perform linear dimensional reduction
+
+Next we perform PCA on the scaled data.
+By default, only the previously determined 2000 variable features are used as input, but can be defined using features argument if you wish to choose a different subset.
+
+```{r}
+# These are now standard steps in the Seurat workflow for visualization and clustering
+VT1 <- RunPCA(VT, verbose = FALSE)
+VT2 <- RunUMAP(VT1, dims = 1:30, verbose = FALSE)
+```
+
+```{r}
+VT2 <- FindNeighbors(VT2, dims = 1:30, verbose = FALSE)
+VT2 <- FindClusters(VT2, verbose = FALSE)
+```
+
+```{r}
+DimPlot(VT2, label = TRUE) + NoLegend()
+```
+
+### Extract meta data
+
+```{r, results='hide'}
+## extract meta data
+md <- VT2@meta.data %>% as.data.table
+knitr::kable(md, caption = "Integrated Meta Data")
+write_xlsx(md, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/jan_metadata.xlsx")
+```
+
+### Determine Cell Number
+
+```{r}
+# How many cells are in each cluster
+# Get cell identity classes
+## count the number of cells per unique combinations of "Sample" and "seurat_clusters"
+## with additional casting after the counting
+totalcells <- md[, .N, by = c( "orig.ident", "seurat_clusters")] %>% dcast(., orig.ident ~ seurat_clusters, value.var = "N")
+knitr::kable(totalcells, caption = "Total Cells per Cluster")
+write_xlsx(totalcells, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/jan_metadata_totalcells.xlsx")
+```
+
+## Differential expression and marker selection
+
+Differential expression allows us to define gene markers specific to each cluster.
+By definition it is influenced by how clusters are defined, so it's important to find the correct resolution of your clustering before defining the markers.
+If some clusters lack any notable markers, adjust the clustering.
+It is recommended to do differential expression on the RNA assay, and not the SCTransform.
+Differential expression can be done between two specific clusters, as well as between a cluster and all other cells.
+
+The function FindAllMarkers() allows us to find markers for every cluster by comparing it to all remaining cells, while reporting either all or only the positive ones.
+By default, only positive markers are reported.
+There are many tests that can be used to define markers, including a very fast and intuitive tf-idf.
+By default, Wilcoxon Rank Sum test is used.
+This takes a while especially if you want to return all genes - expressed or not.
+The runs are much faster when we increase the minimal percentage and log2FC cutoffs (defaults: only.pos = T, min.pct = 0.5, logfc.threshold = 0.5).
+
+### Finding markers
+
+First, the default mathod:
+
+```{r, results='hide', message=FALSE}
+# find markers for every cluster compared to all remaining cells, report only the positive ones; using RNA assay
+DefaultAssay(VT2) <- 'RNA'
+dcd45.markers <- FindAllMarkers(VT2, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+dcd45.markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 5, order_by = avg_log2FC)
+write_xlsx(dcd45.markers, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/jan_rnaassay_25pfeature_marker.xlsx")
+```
+
+Then the more specific method:
+
+```{r, results='hide', message=FALSE}
+# find markers for every cluster compared to all remaining cells, report only the positive ones; using RNA assay
+DefaultAssay(VT2) <- 'RNA'
+dcd45.50markers <- FindAllMarkers(VT2, only.pos = TRUE, min.pct = 0.5, logfc.threshold = 0.25)
+dcd45.50markers %>%
+    group_by(cluster) %>%
+    slice_max(n = 5, order_by = avg_log2FC)
+write_xlsx(dcd45.50markers, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/jan_rnaassay_50pfeature_marker.xlsx")
+```
+
+Finally, the long method: Note the application of "min.pct = 0, logfc.threshold = 0, only.pos = F" as I want the function to return all expressed genes, both positive and negative as well.
+Depending on how large the dataset is, this run can take an entire day!
+
+```{r, collapse=TRUE}
+#No need to rerun this as it takes a while - run once and save files
+DefaultAssay(VT) <- 'RNA'
+cellsPerClust <- as.data.frame(table(VT@active.ident))
+colnames(cellsPerClust) <- c("Cluster", "nCells")
+cellsPerClust
+write.csv(cellsPerClust, file="/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/cellsPerClust.csv")
+```
+
+```{r, eval=FALSE}
+#Overall number of cells 
+sum(cellsPerClust$nCells)
+
+(clusters <- c(0, seq(1:5)))
+
+for(i in clusters){
+  cluster.markers <- FindMarkers(VT2, ident.1 = i, min.pct = 0, logfc.threshold = 0, only.pos = F)
+  write.csv(cluster.markers, file=paste0("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/", i, "_Markers_RNA.csv"))
+}
+```
+
+## Overview of VT scRNA-seq reanalysis from Participant D6 
+
+**QC summary:** - Counts were processed using the standard Seurat (v4.2.0) workflow
+
+    - Number of cells after filtering: 442
+
+    - RNA assay Normalized using: SCTransform
+
+    - Filtering thresholds: nFeature_RNA > 200 & nFeature_RNA < 4000 & percent.mt < 10
+
+    - Dims: 1:30
