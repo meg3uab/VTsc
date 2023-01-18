@@ -23,6 +23,8 @@ navbar:
     href: Jan_qc_VT062.html
   - text: VT_D12
     href: Jan_qc_VT881.html
+  - text: VT Full Integration
+    href: Jan_IntegrationWorkflow.html
   right:
   - icon: fab fa-github
     text: Source code

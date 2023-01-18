@@ -1,8 +1,17 @@
 ---
-title: "Seurat Integration"
-author: "MG"
-date: '2023-1-17'
-output: html_document
+title: "Jan_Vento-Tormo scRNAseq Integration"
+author: "Morgan Greene"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    self_contained: true
+    thumbnails: false
+    lightbox: true
+    downcute_theme: "cosmo"
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: sentence
 ---
 # Seurat Integration Workflow
 
@@ -28,8 +37,12 @@ library(writexl)
 ###### These are the Vento-Tormo CD45+ decidual cells; data was downloaded and each sample was taken through the "Seurat - Guided Clustering Tutorial" then saved as an object
 
 ```{r}
-vt219 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt219_outs/finalqc/vt219qc.rds")
-vt223 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt223_outs/finalqc/vt223qc.rds")
+vt062 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt062_outs/finalqc/vt062qc.rds")
+vt218 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt218_outs/finalqc/vt218qc.rds")
+vtD6 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_clustered_immune.combined.sct.rds")
+vt221 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt221_outs/finalqc/vt221qc.rds")
+vt224 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt224_outs/finalqc/vt224qc.rds")
+vt881 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/vt881_outs/finalqc/vt881qc.rds")
 ```
 
 ## Performing integration on datasets that were normalized with SCTransform:
@@ -47,13 +60,13 @@ vt223 <- readRDS("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTinte
 ### Select integration features and prep step
 
 ```{r}
-features <- SelectIntegrationFeatures(object.list = list(vt219, vt223), nfeatures = 3000)
-vtagg <- PrepSCTIntegration(object.list = list(vt219, vt223), anchor.features = features)
+features <- SelectIntegrationFeatures(object.list = list(vt062, vt218, vtD6, vt221, vt224, vt881), nfeatures = 3000)
+vtagg <- PrepSCTIntegration(object.list = list(vt062, vt218, vtD6, vt221, vt224, vt881), anchor.features = features)
 ```
 
 ### Find immune anchors
 
-```{r}
+```{r, results='hide', message=FALSE}
 immune.anchors <- FindIntegrationAnchors(object.list = vtagg, normalization.method = "SCT",
     anchor.features = features)
 ```
@@ -62,12 +75,12 @@ immune.anchors <- FindIntegrationAnchors(object.list = vtagg, normalization.meth
 
 ```{r}
 #Save wherever you'd like
-saveRDS(immune.anchors, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_219+223anchors.rds")
+saveRDS(immune.anchors, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/jan_anchors.rds")
 ```
 
 ### Combine the data
 
-```{r}
+```{r, results='hide', message=FALSE}
 immune.combined.sct <- IntegrateData(anchorset = immune.anchors, normalization.method = "SCT")
 ```
 
@@ -75,12 +88,12 @@ immune.combined.sct <- IntegrateData(anchorset = immune.anchors, normalization.m
 
 ```{r}
 #Save wherever you'd like
-saveRDS(immune.combined.sct, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_219+223_combined_sct.rds")
+saveRDS(immune.combined.sct, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/jan_combined_sct.rds")
 ```
 
 ### Visualize immune.combined.sct: Look to see how each of the samples were combined into the final object
 
-```{r}
+```{r, results='hide', message=FALSE}
 immune.combined.sct[[]]
 ```
 
@@ -88,19 +101,20 @@ immune.combined.sct[[]]
 
 ```{r}
 pcaimmune.combined.sct <- RunPCA(immune.combined.sct, verbose = FALSE)
-umapimmune.combined.sct <- RunUMAP(pcaimmune.combined.sct, reduction = "pca", dims = 1:30)
-```
 
-```{r}
+umapimmune.combined.sct <- RunUMAP(pcaimmune.combined.sct, reduction = "pca", dims = 1:30)
+
 neighbor <- FindNeighbors(umapimmune.combined.sct, reduction = "pca", dims = 1:30)
+
 neighbor <- FindClusters(neighbor, resolution = 0.5)
+
 ```
 
 ### Save the final object!
 
 ```{r}
 #Save wherever you'd like
-saveRDS(neighbor, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/jan_clustered_immune.combined.sct.rds")
+saveRDS(neighbor, "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/jan_clustered_immune.combined.sct.rds")
 ```
 
 ## Visualize Combined Object
@@ -118,7 +132,7 @@ vtfeatureintegrated_cd45pp
 ## extract meta data
 md <- neighbor@meta.data %>% as.data.table
 knitr::kable(md, caption = "Integrated Meta Data")
-write_xlsx(md, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/sctfeatures_metadata.xlsx")
+write_xlsx(md, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/all_integrate_sctfeatures_metadata.xlsx")
 ```
 
 ### Determine Cell Number
@@ -130,7 +144,7 @@ write_xlsx(md, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_V
 ## with additional casting after the counting
 totalcells <- md[, .N, by = c( "orig.ident", "seurat_clusters")] %>% dcast(., orig.ident ~ seurat_clusters, value.var = "N")
 knitr::kable(totalcells, caption = "Total Cells per Cluster")
-write_xlsx(totalcells, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/sctfeatures_totalcells.xlsx")
+write_xlsx(totalcells, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/all_integrate_totalcells.xlsx")
 ```
 
 ## Determine Cluster Differences
@@ -142,17 +156,17 @@ First, the default method:
 DefaultAssay(neighbor) <- 'RNA'
 dcd45.markers <- FindAllMarkers(neighbor, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 
-write_xlsx(dcd45.markers, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6VTcleanmarker.xlsx")
+write_xlsx(dcd45.markers, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/all_integrate_VTcleanmarker.xlsx")
 ```
 
-Then the specific method:
+Then the more specific method:
 
 ```{r, results='hide', message=FALSE}
 # find markers for every cluster compared to all remaining cells, report only the positive ones
 # set minimum percent threshold at 50%
 DefaultAssay(neighbor) <- 'RNA'
 dcd45.markers.50pct <- FindAllMarkers(neighbor, only.pos = TRUE, min.pct = 0.50, logfc.threshold = 0.25)
-write_xlsx(dcd45.markers.50pct, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6VT50pct_marker.xlsx")
+write_xlsx(dcd45.markers.50pct, path = "/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/all_integrate_VT50pct_marker.xlsx")
 ```
 
 Finally, the long method: Note the application of "min.pct = 0, logfc.threshold = 0, only.pos = F" as I want the function to return all expressed genes, both positive and negative as well.
@@ -164,36 +178,38 @@ DefaultAssay(neighbor) <- 'RNA'
 cellsPerClust <- as.data.frame(table(neighbor@active.ident))
 colnames(cellsPerClust) <- c("Cluster", "nCells")
 cellsPerClust
-write.csv(cellsPerClust, file="/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/inteD6finalqc.csv")
+write.csv(cellsPerClust, file="/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/all_finalqc.csv")
 
 #Overall number of cells 
 sum(cellsPerClust$nCells)
-
 ```
 
 ```{r, eval=FALSE}
-(clusters <- c(0, seq(1:12)))
+(clusters <- c(0, seq(1:18)))
 
 for(i in clusters){
   cluster.markers <- FindMarkers(neighbor, ident.1 = i, min.pct = 0, logfc.threshold = 0, only.pos = F)
-  write.csv(cluster.markers, file=paste0("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/QC_Workflow/D6_integrated_data/", i, "_Markers_RNA.csv"))
+  write.csv(cluster.markers, file=paste0("/Volumes/Porrett2/Morgan_G/Data_Analysis/scAnalysis/JAN_VTintegration/finalqc/", i, "_Markers_RNA.csv"))
 }
 ```
 
-# Overview of VT scRNA-seq reanalysis from Participant D6 
+# Overview of VT scRNA-seq Integration Reanalysis  
 
 ```{r, echo=FALSE}
-vtfeatureintegrated_cd45pp + labs(title = "Clustering of Individual D6 scRNA")
+vtfeatureintegrated_cd45pp + labs(title = "Clustering of 25,041 CD45+ Decidual Cells")
 ```
+
+
 
 **QC summary:** - Counts were processed using the standard Seurat (v4.2.0) workflow
 
-    - Number of cells after filtering: 6326
+    - Number of cells after integration: 25,041
 
     - RNA assay Normalized using: SCTransform
+    
+    - Integration method: Seurat Anchor-based Method
 
     - Filtering thresholds: nFeature_RNA > 200 & nFeature_RNA < 4000 & percent.mt < 10
 
     - Dims: 1:30
-    
     

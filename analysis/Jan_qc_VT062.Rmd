@@ -605,7 +605,7 @@ The runs are much faster when we increase the minimal percentage and log2FC cuto
 
 ### Finding markers
 
-First, the default mathod:
+First, the default method:
 
 ```{r, results='hide', message=FALSE}
 # find markers for every cluster compared to all remaining cells, report only the positive ones; using RNA assay
